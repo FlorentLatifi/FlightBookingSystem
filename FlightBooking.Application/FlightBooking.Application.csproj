@@ -15,8 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\Services\" />
-    <Folder Include="Interfaces\Repositories\" />
     <Folder Include="DTOs\" />
     <Folder Include="Observers\" />
     <Folder Include="Strategies\" />
