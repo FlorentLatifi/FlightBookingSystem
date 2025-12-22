@@ -15,9 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\" />
     <Folder Include="Observers\" />
-    <Folder Include="Strategies\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
