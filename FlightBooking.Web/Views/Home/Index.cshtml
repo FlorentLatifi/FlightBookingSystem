@@ -1,8 +1,73 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model FlightBooking.Application.DTOs.FlightSearchDto
+
+@{
+    ViewData["Title"] = "Kërko Fluturime";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-5">
+    <h1 class="display-4">✈️ Mirë se vini në Flight Booking System</h1>
+    <p class="lead">Gjej dhe rezervo fluturimin tënd të ardhshëm!</p>
 </div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">🔍 Kërko Fluturime</h4>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Search" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="DepartureAirport" class="form-label fw-bold">✈️ Nga (Aeroporti i nisjes)</label>
+                            <input asp-for="DepartureAirport" class="form-control form-control-lg" placeholder="p.sh. PRN - Prishtina" />
+                            <span asp-validation-for="DepartureAirport" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ArrivalAirport" class="form-label fw-bold">🛬 Për në (Aeroporti i mbërritjes)</label>
+                            <input asp-for="ArrivalAirport" class="form-control form-control-lg" placeholder="p.sh. VIE - Vienna" />
+                            <span asp-validation-for="ArrivalAirport" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="DepartureDate" class="form-label fw-bold">📅 Data e nisjes</label>
+                            <input asp-for="DepartureDate" type="date" class="form-control form-control-lg" />
+                            <span asp-validation-for="DepartureDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="NumberOfPassengers" class="form-label fw-bold">👥 Numri i pasagjerëve</label>
+                            <input asp-for="NumberOfPassengers" type="number" min="1" max="10" class="form-control form-control-lg" />
+                            <span asp-validation-for="NumberOfPassengers" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            🔍 Kërko Fluturime
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="alert alert-info mt-4" role="alert">
+            <h5 class="alert-heading">💡 Këshilla:</h5>
+            <ul class="mb-0">
+                <li>Shkruaj kodin e aeroportit (p.sh. PRN, VIE, MUC) ose emrin e qytetit</li>
+                <li>Zgjedh datën e nisjes (minimum nesër)</li>
+                <li>Sistemi do të gjejë të gjithë fluturimet e disponueshme për datën e zgjedhur</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

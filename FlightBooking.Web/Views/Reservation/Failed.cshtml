@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Rezervimi Dështoi";
+    var errorMessage = TempData["ErrorMessage"]?.ToString() ?? "Ndodhi një gabim i papritur gjatë procesimit të rezervimit.";
+}
+
+<div class="text-center mb-5">
+    <div class="mb-4">
+        <span style="font-size: 80px;">❌</span>
+    </div>
+    <h1 class="display-4 text-danger">Rezervimi Dështoi</h1>
+    <p class="lead">Na vjen keq, por ndodhi një problem gjatë procesimit.</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <!-- Error Message -->
+        <div class="alert alert-danger shadow-lg mb-4" role="alert">
+            <h4 class="alert-heading">⚠️ Detajet e Gabimit</h4>
+            <hr>
+            <p class="mb-0">@errorMessage</p>
+        </div>
+
+        <!-- Possible Reasons -->
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">🔍 Arsyet e Mundshme</h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li><strong>Pagesa dështoi:</strong> Kontrollo të dhënat e kartës dhe disponibilitetin e fondeve.</li>
+                    <li><strong>Sesioni skadoi:</strong> Fluturimi mund të jetë rezervuar nga dikush tjetër ndërkohë.</li>
+                    <li><strong>Të dhëna të pavlefshme:</strong> Verifiko që të gjitha fushat janë plotësuar saktë.</li>
+                    <li><strong>Problem teknik:</strong> Provoni përsëri pas disa minutash.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- What to Do -->
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">💡 Çfarë mund të bësh?</h5>
+            </div>
+            <div class="card-body">
+                <ol class="mb-0">
+                    <li>Kthehu në faqen e kërkimit dhe gjej një fluturim tjetër</li>
+                    <li>Verifiko të dhënat e kartës së kreditit</li>
+                    <li>Kontakto mbështetjen nëse problemi vazhdon</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Test Info (For Academic Demo) -->
+        <div class="alert alert-secondary" role="alert">
+            <h6 class="alert-heading">📝 Për Testime (Sistem Demonstrativ):</h6>
+            <p class="mb-0">
+                <strong>Për sukses:</strong> Përdor kartë me numër që përfundon me <strong>numër ÇIFT</strong> (p.sh. 1234567890123456)
+                <br>
+                <strong>Për dështim:</strong> Përdor kartë me numër që përfundon me <strong>numër TEK</strong> (p.sh. 1234567890123457)
+            </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-center mt-4">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg me-3">
+                🏠 Kthehu në Kryefaqe
+            </a>
+            <a href="javascript:history.back()" class="btn btn-secondary btn-lg">
+                ← Kthehu Mbrapa
+            </a>
+        </div>
+    </div>
+</div>

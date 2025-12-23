@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "Rreth Projektit";
+}
+
+<div class="text-center mb-5">
+    <h1 class="display-4">ℹ️ Rreth Projektit</h1>
+    <p class="lead">Flight Booking System - Projekti Akademik</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">🎓 Projekti Akademik</h4>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Lënda: Paternat e Dizajnit dhe Refaktorimi i Kodit</h5>
+                <p class="card-text">
+                    Ky është një projekt akademik që demonstron aplikimin praktik të Design Patterns
+                    dhe Onion Architecture në zhvillimin e një aplikacioni real.
+                </p>
+            </div>
+        </div>
+
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">🏗️ Arkitektura</h4>
+            </div>
+            <div class="card-body">
+                <h5>Onion Architecture (Clean Architecture)</h5>
+                <ul>
+                    <li><strong>Domain Layer:</strong> Entities, Enums (zero dependencies)</li>
+                    <li><strong>Application Layer:</strong> Interfaces, Services, DTOs, Patterns</li>
+                    <li><strong>Infrastructure Layer:</strong> DbContext, Repositories, External Services</li>
+                    <li><strong>Presentation Layer:</strong> MVC Controllers & Views</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">🎯 Design Patterns të Implementuara</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>1️⃣ MVC Pattern</h6>
+                        <p class="small">Ndarja e logjikës në Model-View-Controller</p>
+
+                        <h6>2️⃣ Repository Pattern</h6>
+                        <p class="small">Abstraksion për aksesin në të dhëna</p>
+
+                        <h6>3️⃣ Strategy Pattern</h6>
+                        <p class="small">Algoritme të ndryshme për llogaritjen e çmimeve (Standard, Discount, Seasonal)</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>4️⃣ Observer Pattern</h6>
+                        <p class="small">Sistem njoftimesh (Email, SMS) që njoftohen automatikisht</p>
+
+                        <h6>5️⃣ Dependency Injection</h6>
+                        <p class="small">Inversioni i varësive për testueshmëri dhe fleksibilitet</p>
+
+                        <h6>6️⃣ DTO Pattern</h6>
+                        <p class="small">Transferimi i të dhënave midis layers</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">⚙️ Teknologjitë e Përdorura</h4>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li><strong>Framework:</strong> ASP.NET Core 8.0 MVC</li>
+                    <li><strong>Database:</strong> SQL Server (LocalDB)</li>
+                    <li><strong>ORM:</strong> Entity Framework Core 8.0</li>
+                    <li><strong>Frontend:</strong> Bootstrap 5, Razor Views</li>
+                    <li><strong>Patterns:</strong> Onion Architecture, SOLID Principles</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow-lg mb-4">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">🔥 Karakteristikat Kryesore</h4>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li><strong>Kërkimi i Fluturimeve:</strong> Sipas destinacionit dhe datës</li>
+                    <li><strong>Rezervimi:</strong> Proces i plotë me validime</li>
+                    <li><strong>Pagesa:</strong> Simulim i procesimit të pagesave (mock payment gateway)</li>
+                    <li><strong>Njoftimet:</strong> Email dhe SMS automatike (Observer Pattern)</li>
+                    <li><strong>Llogaritja e Çmimeve:</strong> Strategji të ndryshme (Strategy Pattern)</li>
+                    <li><strong>Parallel Processing:</strong> Pagesa dhe njoftimet në paralel</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>

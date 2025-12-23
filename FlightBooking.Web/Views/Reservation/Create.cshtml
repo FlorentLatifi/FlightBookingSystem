@@ -1,0 +1,212 @@
+﻿@model FlightBooking.Application.DTOs.CreateReservationDto
+
+@{
+    ViewData["Title"] = "Rezervo Fluturimin";
+    var flight = ViewBag.Flight as FlightBooking.Application.DTOs.FlightDto;
+}
+
+<div class="mb-4">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+        ← Kthehu te kërkimi
+    </a>
+</div>
+
+<div class="text-center mb-4">
+    <h2>🎫 Rezervo Fluturimin</h2>
+    <p class="lead text-muted">Plotëso të dhënat për të përfunduar rezervimin</p>
+</div>
+
+@if (flight != null)
+{
+    <!-- Flight Summary -->
+    <div class="card shadow-lg mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">✈️ Detajet e Fluturimit</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Fluturimi:</strong> @flight.FlightNumber</p>
+                    <p><strong>Linja Ajrore:</strong> @flight.Airline</p>
+                    <p><strong>Nga:</strong> @flight.DepartureAirport</p>
+                    <p><strong>Për në:</strong> @flight.ArrivalAirport</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Nisja:</strong> @flight.DepartureTime.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p><strong>Mbërritja:</strong> @flight.ArrivalTime.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p><strong>Kohëzgjatja:</strong> @flight.FormattedDuration</p>
+                    <p><strong>Çmimi fillues:</strong> <span class="text-success fw-bold">€@flight.BasePrice.ToString("F2")</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Reservation Form -->
+<form asp-action="Create" method="post">
+    <input type="hidden" asp-for="FlightId" />
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <!-- Passenger Information -->
+    <div class="card shadow-lg mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">👤 Të Dhënat e Pasagjerit</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Passenger.FirstName" class="form-label fw-bold">Emri</label>
+                    <input asp-for="Passenger.FirstName" class="form-control" placeholder="p.sh. Filan" />
+                    <span asp-validation-for="Passenger.FirstName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Passenger.LastName" class="form-label fw-bold">Mbiemri</label>
+                    <input asp-for="Passenger.LastName" class="form-control" placeholder="p.sh. Fisteku" />
+                    <span asp-validation-for="Passenger.LastName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Passenger.Email" class="form-label fw-bold">Email</label>
+                    <input asp-for="Passenger.Email" type="email" class="form-control" placeholder="p.sh. filan@example.com" />
+                    <span asp-validation-for="Passenger.Email" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Passenger.PhoneNumber" class="form-label fw-bold">Telefoni</label>
+                    <input asp-for="Passenger.PhoneNumber" class="form-control" placeholder="p.sh. +383 44 123 456" />
+                    <span asp-validation-for="Passenger.PhoneNumber" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label asp-for="Passenger.PassportNumber" class="form-label fw-bold">Numri i Pasaportës</label>
+                    <input asp-for="Passenger.PassportNumber" class="form-control" placeholder="p.sh. K12345678" />
+                    <span asp-validation-for="Passenger.PassportNumber" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Passenger.DateOfBirth" class="form-label fw-bold">Data e Lindjes</label>
+                    <input asp-for="Passenger.DateOfBirth" type="date" class="form-control" />
+                    <span asp-validation-for="Passenger.DateOfBirth" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Passenger.Nationality" class="form-label fw-bold">Kombësia</label>
+                    <input asp-for="Passenger.Nationality" class="form-control" placeholder="p.sh. Kosovare" />
+                    <span asp-validation-for="Passenger.Nationality" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seat Class Selection -->
+    <div class="card shadow-lg mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">💺 Zgjedh Klasën e Ulëses</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="SeatClass" value="1" id="economy" checked />
+                        <label class="form-check-label fw-bold" for="economy">
+                            Economy Class
+                        </label>
+                        <p class="small text-muted mb-0">Çmimi bazë</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="SeatClass" value="2" id="premiumeconomy" />
+                        <label class="form-check-label fw-bold" for="premiumeconomy">
+                            Premium Economy
+                        </label>
+                        <p class="small text-muted mb-0">+50% e çmimit bazë</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="SeatClass" value="3" id="business" />
+                        <label class="form-check-label fw-bold" for="business">
+                            Business Class
+                        </label>
+                        <p class="small text-muted mb-0">+150% e çmimit bazë</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="SeatClass" value="4" id="firstclass" />
+                        <label class="form-check-label fw-bold" for="firstclass">
+                            First Class
+                        </label>
+                        <p class="small text-muted mb-0">+300% e çmimit bazë</p>
+                    </div>
+                </div>
+            </div>
+            <span asp-validation-for="SeatClass" class="text-danger"></span>
+        </div>
+    </div>
+
+    <!-- Payment Information -->
+    <div class="card shadow-lg mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">💳 Të Dhënat e Pagesës</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <strong>ℹ️ Shënim:</strong> Ky është një sistem demonstrativ. Të dhënat e kartës nuk ruhen dhe nuk procesohen në realitet.
+                <br><strong>Për test:</strong> Përdor kartë me numër që përfundon me numër <strong>ÇIFT</strong> për sukses, ose <strong>TEK</strong> për dështim.
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PaymentDetails.PaymentMethod" class="form-label fw-bold">Metoda e Pagesës</label>
+                <select asp-for="PaymentDetails.PaymentMethod" class="form-select">
+                    <option value="Credit Card">Kartë Krediti</option>
+                    <option value="Debit Card">Kartë Debiti</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PaymentDetails.CardNumber" class="form-label fw-bold">Numri i Kartës</label>
+                <input asp-for="PaymentDetails.CardNumber" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19" />
+                <span asp-validation-for="PaymentDetails.CardNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PaymentDetails.CardHolderName" class="form-label fw-bold">Emri në Kartë</label>
+                <input asp-for="PaymentDetails.CardHolderName" class="form-control" placeholder="FILAN FISTEKU" />
+                <span asp-validation-for="PaymentDetails.CardHolderName" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="PaymentDetails.ExpiryDate" class="form-label fw-bold">Data e Skadimit</label>
+                    <input asp-for="PaymentDetails.ExpiryDate" class="form-control" placeholder="MM/YY" maxlength="5" />
+                    <span asp-validation-for="PaymentDetails.ExpiryDate" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="PaymentDetails.CVV" class="form-label fw-bold">CVV</label>
+                    <input asp-for="PaymentDetails.CVV" class="form-control" placeholder="123" maxlength="4" />
+                    <span asp-validation-for="PaymentDetails.CVV" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="card shadow-lg mb-4">
+        <div class="card-body text-center p-4">
+            <h5 class="mb-3">📝 Konfirmo Rezervimin</h5>
+            <p class="text-muted">Duke klikuar "Përfundo Rezervimin", ti pranon kushtet dhe procedon me pagesën.</p>
+            <button type="submit" class="btn btn-success btn-lg px-5">
+                ✅ Përfundo Rezervimin
+            </button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
