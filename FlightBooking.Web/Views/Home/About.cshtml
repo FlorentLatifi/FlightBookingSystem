@@ -1,101 +1,393 @@
 ﻿@{
-    ViewData["Title"] = "Rreth Projektit";
+    ViewData["Title"] = "About the Project";
 }
 
-<div class="text-center mb-5">
-    <h1 class="display-4">ℹ️ Rreth Projektit</h1>
-    <p class="lead">Flight Booking System - Projekti Akademik</p>
+<!-- Hero Section -->
+<div class="modern-card text-center mb-4" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
+    <div style="padding: 3rem 0;">
+        <i class="bi bi-mortarboard" style="font-size: 4rem;"></i>
+        <h1 class="display-4 fw-bold mt-3">Academic Project</h1>
+        <p class="lead">Design Patterns & Code Refactoring</p>
+    </div>
 </div>
 
+<!-- Project Info -->
 <div class="row">
-    <div class="col-md-8 mx-auto">
-        <div class="card shadow-lg mb-4">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">🎓 Projekti Akademik</h4>
+    <div class="col-lg-8 mx-auto">
+        <div class="modern-card mb-4">
+            <div class="card-header-modern">
+                <h3>
+                    <i class="bi bi-info-circle me-2"></i>
+                    Project Overview
+                </h3>
             </div>
-            <div class="card-body">
-                <h5 class="card-title">Lënda: Paternat e Dizajnit dhe Refaktorimi i Kodit</h5>
-                <p class="card-text">
-                    Ky është një projekt akademik që demonstron aplikimin praktik të Design Patterns
-                    dhe Onion Architecture në zhvillimin e një aplikacioni real.
-                </p>
-            </div>
+
+            <p class="lead">
+                This is a comprehensive flight booking system built to demonstrate professional software architecture and design patterns in practice.
+            </p>
+
+            <h5 class="fw-bold mt-4 mb-3">📚 Course Information</h5>
+            <ul>
+                <li><strong>Subject:</strong> Design Patterns & Code Refactoring</li>
+                <li><strong>Institution:</strong> University of Prishtina</li>
+                <li><strong>Year:</strong> 2024-2025</li>
+                <li><strong>Framework:</strong> ASP.NET Core 8.0 MVC</li>
+            </ul>
         </div>
 
-        <div class="card shadow-lg mb-4">
-            <div class="card-header bg-success text-white">
-                <h4 class="mb-0">🏗️ Arkitektura</h4>
+        <!-- Architecture -->
+        <div class="modern-card mb-4">
+            <div class="card-header-modern">
+                <h3>
+                    <i class="bi bi-diagram-3 me-2"></i>
+                    Onion Architecture
+                </h3>
             </div>
-            <div class="card-body">
-                <h5>Onion Architecture (Clean Architecture)</h5>
-                <ul>
-                    <li><strong>Domain Layer:</strong> Entities, Enums (zero dependencies)</li>
-                    <li><strong>Application Layer:</strong> Interfaces, Services, DTOs, Patterns</li>
-                    <li><strong>Infrastructure Layer:</strong> DbContext, Repositories, External Services</li>
-                    <li><strong>Presentation Layer:</strong> MVC Controllers & Views</li>
-                </ul>
+
+            <div class="text-center mb-4">
+                <div style="max-width: 400px; margin: 0 auto;">
+                    <svg viewBox="0 0 200 200" style="width: 100%;">
+                        <!-- Outermost Layer - Presentation -->
+                        <circle cx="100" cy="100" r="90" fill="#fed7aa" opacity="0.3" />
+                        <text x="100" y="25" text-anchor="middle" font-size="10" font-weight="bold" fill="#f59e0b">Presentation</text>
+
+                        <!-- Infrastructure Layer -->
+                        <circle cx="100" cy="100" r="70" fill="#d1fae5" opacity="0.3" />
+                        <text x="100" y="50" text-anchor="middle" font-size="10" font-weight="bold" fill="#10b981">Infrastructure</text>
+
+                        <!-- Application Layer -->
+                        <circle cx="100" cy="100" r="50" fill="#ddd6fe" opacity="0.3" />
+                        <text x="100" y="75" text-anchor="middle" font-size="10" font-weight="bold" fill="#7c3aed">Application</text>
+
+                        <!-- Domain Layer (Core) -->
+                        <circle cx="100" cy="100" r="30" fill="#dbeafe" opacity="0.3" />
+                        <text x="100" y="105" text-anchor="middle" font-size="10" font-weight="bold" fill="#2563eb">Domain</text>
+                    </svg>
+                </div>
             </div>
-        </div>
 
-        <div class="card shadow-lg mb-4">
-            <div class="card-header bg-info text-white">
-                <h4 class="mb-0">🎯 Design Patterns të Implementuara</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6>1️⃣ MVC Pattern</h6>
-                        <p class="small">Ndarja e logjikës në Model-View-Controller</p>
-
-                        <h6>2️⃣ Repository Pattern</h6>
-                        <p class="small">Abstraksion për aksesin në të dhëna</p>
-
-                        <h6>3️⃣ Strategy Pattern</h6>
-                        <p class="small">Algoritme të ndryshme për llogaritjen e çmimeve (Standard, Discount, Seasonal)</p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 rounded layer-domain">
+                        <h6 class="fw-bold mb-2">🎯 Domain Layer</h6>
+                        <ul class="small mb-0">
+                            <li>Entities (Flight, Passenger, etc.)</li>
+                            <li>Enums & Value Objects</li>
+                            <li>Business Rules</li>
+                            <li>Zero Dependencies</li>
+                        </ul>
                     </div>
-                    <div class="col-md-6">
-                        <h6>4️⃣ Observer Pattern</h6>
-                        <p class="small">Sistem njoftimesh (Email, SMS) që njoftohen automatikisht</p>
+                </div>
 
-                        <h6>5️⃣ Dependency Injection</h6>
-                        <p class="small">Inversioni i varësive për testueshmëri dhe fleksibilitet</p>
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 rounded layer-application">
+                        <h6 class="fw-bold mb-2">⚙️ Application Layer</h6>
+                        <ul class="small mb-0">
+                            <li>Business Services</li>
+                            <li>DTOs & Interfaces</li>
+                            <li>Design Patterns</li>
+                            <li>Use Cases</li>
+                        </ul>
+                    </div>
+                </div>
 
-                        <h6>6️⃣ DTO Pattern</h6>
-                        <p class="small">Transferimi i të dhënave midis layers</p>
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 rounded layer-infrastructure">
+                        <h6 class="fw-bold mb-2">💾 Infrastructure Layer</h6>
+                        <ul class="small mb-0">
+                            <li>Database (EF Core)</li>
+                            <li>Repositories</li>
+                            <li>External Services</li>
+                            <li>Email, SMS, etc.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 rounded layer-presentation">
+                        <h6 class="fw-bold mb-2">🎨 Presentation Layer</h6>
+                        <ul class="small mb-0">
+                            <li>MVC Controllers</li>
+                            <li>Razor Views</li>
+                            <li>UI Components</li>
+                            <li>User Interface</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card shadow-lg mb-4">
-            <div class="card-header bg-warning text-dark">
-                <h4 class="mb-0">⚙️ Teknologjitë e Përdorura</h4>
+        <!-- Design Patterns -->
+        <div class="modern-card mb-4">
+            <div class="card-header-modern">
+                <h3>
+                    <i class="bi bi-puzzle me-2"></i>
+                    Design Patterns Implemented
+                </h3>
             </div>
-            <div class="card-body">
-                <ul>
-                    <li><strong>Framework:</strong> ASP.NET Core 8.0 MVC</li>
-                    <li><strong>Database:</strong> SQL Server (LocalDB)</li>
-                    <li><strong>ORM:</strong> Entity Framework Core 8.0</li>
-                    <li><strong>Frontend:</strong> Bootstrap 5, Razor Views</li>
-                    <li><strong>Patterns:</strong> Onion Architecture, SOLID Principles</li>
-                </ul>
+
+            <div class="accordion" id="patternsAccordion">
+                <!-- MVC Pattern -->
+                <div class="accordion-item border-0 mb-2 rounded">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#mvc">
+                            <i class="bi bi-diagram-3-fill text-primary me-2"></i>
+                            <strong>MVC Pattern</strong>
+                        </button>
+                    </h2>
+                    <div id="mvc" class="accordion-collapse collapse show" data-bs-parent="#patternsAccordion">
+                        <div class="accordion-body">
+                            <p><strong>Purpose:</strong> Separates application into Model, View, and Controller</p>
+                            <p><strong>Implementation:</strong></p>
+                            <ul>
+                                <li>Controllers handle HTTP requests</li>
+                                <li>Views render UI (Razor)</li>
+                                <li>Models represent data</li>
+                            </ul>
+                            <p class="mb-0 small text-muted"><i class="bi bi-code-slash me-1"></i> <code>HomeController, ReservationController</code></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Repository Pattern -->
+                <div class="accordion-item border-0 mb-2 rounded">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#repository">
+                            <i class="bi bi-database-fill text-success me-2"></i>
+                            <strong>Repository Pattern</strong>
+                        </button>
+                    </h2>
+                    <div id="repository" class="accordion-collapse collapse" data-bs-parent="#patternsAccordion">
+                        <div class="accordion-body">
+                            <p><strong>Purpose:</strong> Abstracts data access layer</p>
+                            <p><strong>Benefits:</strong></p>
+                            <ul>
+                                <li>Decouples business logic from data access</li>
+                                <li>Easy to test with mock repositories</li>
+                                <li>Can switch database without changing business code</li>
+                            </ul>
+                            <p class="mb-0 small text-muted"><i class="bi bi-code-slash me-1"></i> <code>IFlightRepository, IReservationRepository, etc.</code></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Strategy Pattern -->
+                <div class="accordion-item border-0 mb-2 rounded">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#strategy">
+                            <i class="bi bi-sliders text-warning me-2"></i>
+                            <strong>Strategy Pattern</strong>
+                        </button>
+                    </h2>
+                    <div id="strategy" class="accordion-collapse collapse" data-bs-parent="#patternsAccordion">
+                        <div class="accordion-body">
+                            <p><strong>Purpose:</strong> Allows switching algorithms at runtime</p>
+                            <p><strong>Implementation:</strong></p>
+                            <ul>
+                                <li><code>StandardPricingStrategy</code> - Regular prices</li>
+                                <li><code>DiscountPricingStrategy</code> - 10% discount</li>
+                                <li><code>SeasonalPricingStrategy</code> - Season-based pricing</li>
+                            </ul>
+                            <p class="mb-0"><strong>Demo:</strong> Switch pricing strategies on search results page</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observer Pattern -->
+                <div class="accordion-item border-0 mb-2 rounded">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#observer">
+                            <i class="bi bi-bell-fill text-info me-2"></i>
+                            <strong>Observer Pattern</strong>
+                        </button>
+                    </h2>
+                    <div id="observer" class="accordion-collapse collapse" data-bs-parent="#patternsAccordion">
+                        <div class="accordion-body">
+                            <p><strong>Purpose:</strong> Allows objects to be notified of events</p>
+                            <p><strong>Implementation:</strong></p>
+                            <ul>
+                                <li><code>EmailNotificationObserver</code> - Sends emails</li>
+                                <li><code>SmsNotificationObserver</code> - Sends SMS (mock)</li>
+                                <li><code>NotificationSubject</code> - Manages observers</li>
+                            </ul>
+                            <p class="mb-0"><strong>Demo:</strong> After successful booking, email & SMS are sent in parallel</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dependency Injection -->
+                <div class="accordion-item border-0 mb-2 rounded">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#di">
+                            <i class="bi bi-box-arrow-in-down text-danger me-2"></i>
+                            <strong>Dependency Injection</strong>
+                        </button>
+                    </h2>
+                    <div id="di" class="accordion-collapse collapse" data-bs-parent="#patternsAccordion">
+                        <div class="accordion-body">
+                            <p><strong>Purpose:</strong> Inverts control flow for better testability</p>
+                            <p><strong>Benefits:</strong></p>
+                            <ul>
+                                <li>Loose coupling between components</li>
+                                <li>Easy unit testing with mocks</li>
+                                <li>Configurable at startup</li>
+                            </ul>
+                            <p class="mb-0 small text-muted"><i class="bi bi-code-slash me-1"></i> <code>Program.cs - builder.Services.AddScoped&lt;T&gt;()</code></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DTO Pattern -->
+                <div class="accordion-item border-0 rounded">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dto">
+                            <i class="bi bi-arrow-left-right text-secondary me-2"></i>
+                            <strong>DTO Pattern</strong>
+                        </button>
+                    </h2>
+                    <div id="dto" class="accordion-collapse collapse" data-bs-parent="#patternsAccordion">
+                        <div class="accordion-body">
+                            <p><strong>Purpose:</strong> Transfers data between layers safely</p>
+                            <p><strong>Benefits:</strong></p>
+                            <ul>
+                                <li>Hides sensitive domain data</li>
+                                <li>Decouples layers</li>
+                                <li>Optimized for serialization</li>
+                            </ul>
+                            <p class="mb-0 small text-muted"><i class="bi bi-code-slash me-1"></i> <code>FlightDto, ReservationDto, CreateReservationDto, etc.</code></p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="card shadow-lg mb-4">
-            <div class="card-header bg-danger text-white">
-                <h4 class="mb-0">🔥 Karakteristikat Kryesore</h4>
+        <!-- Technologies -->
+        <div class="modern-card mb-4">
+            <div class="card-header-modern">
+                <h3>
+                    <i class="bi bi-tools me-2"></i>
+                    Technologies Used
+                </h3>
             </div>
-            <div class="card-body">
-                <ol>
-                    <li><strong>Kërkimi i Fluturimeve:</strong> Sipas destinacionit dhe datës</li>
-                    <li><strong>Rezervimi:</strong> Proces i plotë me validime</li>
-                    <li><strong>Pagesa:</strong> Simulim i procesimit të pagesave (mock payment gateway)</li>
-                    <li><strong>Njoftimet:</strong> Email dhe SMS automatike (Observer Pattern)</li>
-                    <li><strong>Llogaritja e Çmimeve:</strong> Strategji të ndryshme (Strategy Pattern)</li>
-                    <li><strong>Parallel Processing:</strong> Pagesa dhe njoftimet në paralel</li>
-                </ol>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="fw-bold mb-2">Backend</h6>
+                    <ul>
+                        <li>ASP.NET Core 8.0 MVC</li>
+                        <li>Entity Framework Core</li>
+                        <li>SQL Server LocalDB</li>
+                        <li>LINQ</li>
+                        <li>Dependency Injection</li>
+                    </ul>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="fw-bold mb-2">Frontend</h6>
+                    <ul>
+                        <li>Razor Pages</li>
+                        <li>Bootstrap 5</li>
+                        <li>Custom CSS (modern-booking.css)</li>
+                        <li>JavaScript (ES6+)</li>
+                        <li>Bootstrap Icons</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="modern-card mb-4">
+            <div class="card-header-modern">
+                <h3>
+                    <i class="bi bi-star-fill me-2"></i>
+                    Key Features
+                </h3>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                        <div>
+                            <strong>Multi-Step Booking Wizard</strong>
+                            <p class="small text-muted mb-0">Intuitive step-by-step booking process</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                        <div>
+                            <strong>Real-time Price Calculation</strong>
+                            <p class="small text-muted mb-0">Dynamic pricing with Strategy Pattern</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                        <div>
+                            <strong>Parallel Notifications</strong>
+                            <p class="small text-muted mb-0">Email & SMS sent simultaneously</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                        <div>
+                            <strong>System Insights Panel</strong>
+                            <p class="small text-muted mb-0">Live view of active patterns & services</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                        <div>
+                            <strong>Mock Payment Gateway</strong>
+                            <p class="small text-muted mb-0">Simulated payment processing</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                        <div>
+                            <strong>Responsive Design</strong>
+                            <p class="small text-muted mb-0">Works on desktop, tablet, and mobile</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Author -->
+        <div class="modern-card text-center" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);">
+            <i class="bi bi-person-circle" style="font-size: 4rem; color: var(--primary-color);"></i>
+            <h4 class="fw-bold mt-3 mb-2">Florent Latifi</h4>
+            <p class="text-muted mb-0">Computer Science Student</p>
+            <p class="text-muted">University of Prishtina</p>
+
+            <div class="mt-4">
+                <a asp-action="Index" class="btn-modern btn-primary-modern">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Back to Home
+                </a>
             </div>
         </div>
     </div>
 </div>
+@section Scripts {
+    <script>
+        // Update insights for About page
+        updateInsights({
+        services: [],
+        patterns: ['Onion Architecture', 'MVC Pattern', 'All Patterns Documented']
+        });
+    </script>
+}

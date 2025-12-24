@@ -1,72 +1,195 @@
 ﻿@{
-    ViewData["Title"] = "Rezervimi Dështoi";
-    var errorMessage = TempData["ErrorMessage"]?.ToString() ?? "Ndodhi një gabim i papritur gjatë procesimit të rezervimit.";
+    ViewData["Title"] = "Booking Failed";
+    var errorMessage = TempData["ErrorMessage"]?.ToString() ?? "An unexpected error occurred during booking.";
 }
 
-<div class="text-center mb-5">
-    <div class="mb-4">
-        <span style="font-size: 80px;">❌</span>
+<!-- Wizard Progress Bar -->
+<div class="wizard-progress">
+    <div class="progress-steps">
+        <div class="progress-step completed">
+            <div class="step-icon"><i class="bi bi-check"></i></div>
+            <div class="step-label">Search</div>
+        </div>
+        <div class="progress-step completed">
+            <div class="step-icon"><i class="bi bi-check"></i></div>
+            <div class="step-label">Select Flight</div>
+        </div>
+        <div class="progress-step completed">
+            <div class="step-icon"><i class="bi bi-check"></i></div>
+            <div class="step-label">Passenger Info</div>
+        </div>
+        <div class="progress-step" style="position: relative;">
+            <div class="step-icon" style="background: var(--danger-color);">
+                <i class="bi bi-x-lg"></i>
+            </div>
+            <div class="step-label" style="color: var(--danger-color);">Payment Failed</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">5</div>
+            <div class="step-label">Confirmation</div>
+        </div>
     </div>
-    <h1 class="display-4 text-danger">Rezervimi Dështoi</h1>
-    <p class="lead">Na vjen keq, por ndodhi një problem gjatë procesimit.</p>
+</div>
+
+<!-- Error Animation -->
+<div class="modern-card text-center mb-4">
+    <div class="success-animation">
+        <div class="checkmark-circle" style="background: var(--danger-color);">
+            <i class="bi bi-x-lg checkmark"></i>
+        </div>
+        <h1 class="display-4 fw-bold mb-3" style="color: var(--danger-color);">
+            Booking Failed
+        </h1>
+        <p class="lead text-muted">We couldn't process your booking</p>
+    </div>
 </div>
 
 <div class="row justify-content-center">
-    <div class="col-md-8">
+    <div class="col-lg-8">
         <!-- Error Message -->
-        <div class="alert alert-danger shadow-lg mb-4" role="alert">
-            <h4 class="alert-heading">⚠️ Detajet e Gabimit</h4>
-            <hr>
-            <p class="mb-0">@errorMessage</p>
+        <div class="modern-card mb-4" style="border-left: 4px solid var(--danger-color);">
+            <div class="d-flex align-items-start">
+                <div style="width: 50px; height: 50px; border-radius: 50%; background: #fee2e2; color: var(--danger-color); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 1rem;">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.5rem;"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-2">Error Details</h5>
+                    <p class="mb-0 text-muted">@errorMessage</p>
+                </div>
+            </div>
         </div>
 
-        <!-- Possible Reasons -->
-        <div class="card shadow-lg mb-4">
-            <div class="card-header bg-warning text-dark">
-                <h5 class="mb-0">🔍 Arsyet e Mundshme</h5>
+        <!-- Common Reasons -->
+        <div class="modern-card mb-4">
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-question-circle text-primary me-2"></i>
+                Common Reasons for Failure
+            </h5>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 rounded" style="background: var(--light-color);">
+                        <div class="fw-bold mb-2">
+                            <i class="bi bi-credit-card text-danger me-2"></i>
+                            Payment Issues
+                        </div>
+                        <ul class="small mb-0 text-muted ps-3">
+                            <li>Insufficient funds</li>
+                            <li>Invalid card details</li>
+                            <li>Card expired</li>
+                            <li>Payment declined by bank</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 rounded" style="background: var(--light-color);">
+                        <div class="fw-bold mb-2">
+                            <i class="bi bi-airplane text-warning me-2"></i>
+                            Flight Availability
+                        </div>
+                        <ul class="small mb-0 text-muted ps-3">
+                            <li>Flight fully booked</li>
+                            <li>Flight cancelled</li>
+                            <li>Session expired</li>
+                            <li>Seats no longer available</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 rounded" style="background: var(--light-color);">
+                        <div class="fw-bold mb-2">
+                            <i class="bi bi-person text-info me-2"></i>
+                            Passenger Information
+                        </div>
+                        <ul class="small mb-0 text-muted ps-3">
+                            <li>Invalid passport details</li>
+                            <li>Missing required fields</li>
+                            <li>Age restrictions</li>
+                            <li>Incorrect passenger data</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 rounded" style="background: var(--light-color);">
+                        <div class="fw-bold mb-2">
+                            <i class="bi bi-wifi-off text-secondary me-2"></i>
+                            Technical Issues
+                        </div>
+                        <ul class="small mb-0 text-muted ps-3">
+                            <li>Network timeout</li>
+                            <li>Server error</li>
+                            <li>Connection lost</li>
+                            <li>System maintenance</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <ul class="mb-0">
-                    <li><strong>Pagesa dështoi:</strong> Kontrollo të dhënat e kartës dhe disponibilitetin e fondeve.</li>
-                    <li><strong>Sesioni skadoi:</strong> Fluturimi mund të jetë rezervuar nga dikush tjetër ndërkohë.</li>
-                    <li><strong>Të dhëna të pavlefshme:</strong> Verifiko që të gjitha fushat janë plotësuar saktë.</li>
-                    <li><strong>Problem teknik:</strong> Provoni përsëri pas disa minutash.</li>
+        </div>
+
+        <!-- Test Mode Info -->
+        <div class="modern-card mb-4" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%); border: 2px dashed var(--warning-color);">
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-info-circle-fill text-warning me-2"></i>
+                Test Mode Information
+            </h5>
+
+            <div class="alert alert-warning mb-3">
+                <strong>For Testing Purposes:</strong>
+                <ul class="mb-0 mt-2">
+                    <li>Use card number ending with <strong>EVEN</strong> digit for success (e.g., 4242424242424242)</li>
+                    <li>Use card number ending with <strong>ODD</strong> digit for failure (e.g., 4242424242424243)</li>
                 </ul>
             </div>
-        </div>
 
-        <!-- What to Do -->
-        <div class="card shadow-lg mb-4">
-            <div class="card-header bg-info text-white">
-                <h5 class="mb-0">💡 Çfarë mund të bësh?</h5>
-            </div>
-            <div class="card-body">
-                <ol class="mb-0">
-                    <li>Kthehu në faqen e kërkimit dhe gjej një fluturim tjetër</li>
-                    <li>Verifiko të dhënat e kartës së kreditit</li>
-                    <li>Kontakto mbështetjen nëse problemi vazhdon</li>
-                </ol>
-            </div>
-        </div>
-
-        <!-- Test Info (For Academic Demo) -->
-        <div class="alert alert-secondary" role="alert">
-            <h6 class="alert-heading">📝 Për Testime (Sistem Demonstrativ):</h6>
-            <p class="mb-0">
-                <strong>Për sukses:</strong> Përdor kartë me numër që përfundon me <strong>numër ÇIFT</strong> (p.sh. 1234567890123456)
-                <br>
-                <strong>Për dështim:</strong> Përdor kartë me numër që përfundon me <strong>numër TEK</strong> (p.sh. 1234567890123457)
+            <p class="small text-muted mb-0">
+                <i class="bi bi-shield-check me-1"></i>
+                This is a demonstration system. No real payments are processed.
             </p>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="text-center mt-4">
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg me-3">
-                🏠 Kthehu në Kryefaqe
+        <!-- What to Do Next -->
+        <div class="modern-card mb-4">
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-lightbulb text-warning me-2"></i>
+                What to Do Next
+            </h5>
+
+            <ol class="mb-0 ps-3">
+                <li class="mb-2">Verify your payment card details and try again</li>
+                <li class="mb-2">Check your bank account for sufficient funds</li>
+                <li class="mb-2">Return to search and select a different flight</li>
+                <li class="mb-2">Contact support if the problem persists</li>
+            </ol>
+        </div>
+
+        <!-- Actions -->
+        <div class="d-grid gap-2">
+            <a href="javascript:history.back()" class="btn-modern btn-primary-modern btn-lg-modern">
+                <i class="bi bi-arrow-left me-2"></i>
+                Try Again
             </a>
-            <a href="javascript:history.back()" class="btn btn-secondary btn-lg">
-                ← Kthehu Mbrapa
+            <a asp-controller="Home" asp-action="Index" class="btn-modern btn-lg-modern" style="background: white; color: var(--primary-color); border: 2px solid var(--primary-color);">
+                <i class="bi bi-search me-2"></i>
+                New Search
             </a>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Update insights
+        updateInsights({
+            services: ['PaymentService', 'ReservationService'],
+            patterns: ['Error Handling', 'Transaction Rollback']
+        });
+
+        // Show error notification
+        setTimeout(() => {
+            showNotification('email', 'Booking Failed', '@errorMessage.Replace("'", "\\'")');
+        }, 500);
+    </script>
+}

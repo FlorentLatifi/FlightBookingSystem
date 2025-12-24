@@ -1,67 +1,184 @@
 ﻿@model FlightBooking.Application.DTOs.FlightSearchDto
 
 @{
-    ViewData["Title"] = "Kërko Fluturime";
+    ViewData["Title"] = "Search Flights";
 }
 
-<div class="text-center mb-5">
-    <h1 class="display-4">✈️ Mirë se vini në Flight Booking System</h1>
-    <p class="lead">Gjej dhe rezervo fluturimin tënd të ardhshëm!</p>
+<!-- Wizard Progress Bar -->
+<div class="wizard-progress">
+    <div class="progress-steps">
+        <div class="progress-step active">
+            <div class="step-icon">1</div>
+            <div class="step-label">Search</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">2</div>
+            <div class="step-label">Select Flight</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">3</div>
+            <div class="step-label">Passenger Info</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">4</div>
+            <div class="step-label">Payment</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">5</div>
+            <div class="step-label">Confirmation</div>
+        </div>
+    </div>
 </div>
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-lg">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">🔍 Kërko Fluturime</h4>
+<!-- Hero Section -->
+<div class="modern-card text-center mb-4">
+    <div class="hero-section" style="padding: 3rem 0;">
+        <i class="bi bi-airplane" style="font-size: 4rem; color: var(--primary-color);"></i>
+        <h1 class="display-4 fw-bold mt-3" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+            Find Your Perfect Flight
+        </h1>
+        <p class="lead" style="color: rgba(255,255,255,0.9);">
+            Search thousands of flights to destinations worldwide
+        </p>
+    </div>
+</div>
+
+<!-- Search Form -->
+<div class="modern-card">
+    <div class="card-header-modern">
+        <h3>
+            <i class="bi bi-search me-2"></i>
+            Search Flights
+        </h3>
+    </div>
+
+    <form asp-action="Search" method="post" id="searchForm">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="row g-3">
+            <!-- Departure Airport -->
+            <div class="col-md-6">
+                <div class="form-group-modern">
+                    <label asp-for="DepartureAirport" class="form-label-modern">
+                        <i class="bi bi-geo-alt-fill text-primary me-1"></i>
+                        From
+                    </label>
+                    <input asp-for="DepartureAirport" 
+                           class="form-control-modern" 
+                           placeholder="e.g. PRN - Prishtina" 
+                           list="departureAirports" />
+                    <datalist id="departureAirports">
+                        <option value="PRN - Prishtina"/>
+                        <option value="TIA - Tirana"/>
+                        <option value="SKP - Skopje"/>
+                    </datalist>
+                    <span asp-validation-for="DepartureAirport" class="text-danger small"></span>
+                </div>
             </div>
-            <div class="card-body p-4">
-                <form asp-action="Search" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label asp-for="DepartureAirport" class="form-label fw-bold">✈️ Nga (Aeroporti i nisjes)</label>
-                            <input asp-for="DepartureAirport" class="form-control form-control-lg" placeholder="p.sh. PRN - Prishtina" />
-                            <span asp-validation-for="DepartureAirport" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-6">
-                            <label asp-for="ArrivalAirport" class="form-label fw-bold">🛬 Për në (Aeroporti i mbërritjes)</label>
-                            <input asp-for="ArrivalAirport" class="form-control form-control-lg" placeholder="p.sh. VIE - Vienna" />
-                            <span asp-validation-for="ArrivalAirport" class="text-danger"></span>
-                        </div>
-                    </div>
+            <!-- Arrival Airport -->
+            <div class="col-md-6">
+                <div class="form-group-modern">
+                    <label asp-for="ArrivalAirport" class="form-label-modern">
+                        <i class="bi bi-geo-fill text-success me-1"></i>
+                        To
+                    </label>
+                    <input asp-for="ArrivalAirport" 
+                           class="form-control-modern" 
+                           placeholder="e.g. VIE - Vienna" 
+                           list="arrivalAirports" />
+                    <datalist id="arrivalAirports">
+                        <option value="VIE - Vienna"/>
+                        <option value="MUC - Munich"/>
+                        <option value="FCO - Rome"/>
+                        <option value="LHR - London"/>
+                    </datalist>
+                    <span asp-validation-for="ArrivalAirport" class="text-danger small"></span>
+                </div>
+            </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label asp-for="DepartureDate" class="form-label fw-bold">📅 Data e nisjes</label>
-                            <input asp-for="DepartureDate" type="date" class="form-control form-control-lg" />
-                            <span asp-validation-for="DepartureDate" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-6">
-                            <label asp-for="NumberOfPassengers" class="form-label fw-bold">👥 Numri i pasagjerëve</label>
-                            <input asp-for="NumberOfPassengers" type="number" min="1" max="10" class="form-control form-control-lg" />
-                            <span asp-validation-for="NumberOfPassengers" class="text-danger"></span>
-                        </div>
-                    </div>
+            <!-- Departure Date -->
+            <div class="col-md-6">
+                <div class="form-group-modern">
+                    <label asp-for="DepartureDate" class="form-label-modern">
+                        <i class="bi bi-calendar-event text-info me-1"></i>
+                        Departure Date
+                    </label>
+                    <input asp-for="DepartureDate" 
+                           type="date" 
+                           class="form-control-modern" 
+                           min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="DepartureDate" class="text-danger small"></span>
+                </div>
+            </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            🔍 Kërko Fluturime
-                        </button>
-                    </div>
-                </form>
+            <!-- Number of Passengers -->
+            <div class="col-md-6">
+                <div class="form-group-modern">
+                    <label asp-for="NumberOfPassengers" class="form-label-modern">
+                        <i class="bi bi-people-fill text-warning me-1"></i>
+                        Passengers
+                    </label>
+                    <select asp-for="NumberOfPassengers" class="form-control-modern">
+                        <option value="1">1 Passenger</option>
+                        <option value="2">2 Passengers</option>
+                        <option value="3">3 Passengers</option>
+                        <option value="4">4 Passengers</option>
+                        <option value="5">5 Passengers</option>
+                        <option value="6">6 Passengers</option>
+                        <option value="7">7 Passengers</option>
+                        <option value="8">8 Passengers</option>
+                        <option value="9">9 Passengers</option>
+                        <option value="10">10 Passengers</option>
+                    </select>
+                    <span asp-validation-for="NumberOfPassengers" class="text-danger small"></span>
+                </div>
             </div>
         </div>
 
-        <!-- Info Box -->
-        <div class="alert alert-info mt-4" role="alert">
-            <h5 class="alert-heading">💡 Këshilla:</h5>
-            <ul class="mb-0">
-                <li>Shkruaj kodin e aeroportit (p.sh. PRN, VIE, MUC) ose emrin e qytetit</li>
-                <li>Zgjedh datën e nisjes (minimum nesër)</li>
-                <li>Sistemi do të gjejë të gjithë fluturimet e disponueshme për datën e zgjedhur</li>
-            </ul>
+        <!-- Submit Button -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn-modern btn-primary-modern btn-lg-modern">
+                <i class="bi bi-search me-2"></i>
+                Search Flights
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Info Panel -->
+<div class="modern-card mt-4" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%); border: 2px solid var(--primary-color);">
+    <h5 class="fw-bold mb-3">
+        <i class="bi bi-lightbulb-fill text-warning me-2"></i>
+        Travel Tips
+    </h5>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="d-flex align-items-start">
+                <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                <div>
+                    <strong>Book Early</strong>
+                    <p class="small mb-0 text-muted">Best prices are usually 2-3 months before departure</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="d-flex align-items-start">
+                <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                <div>
+                    <strong>Flexible Dates</strong>
+                    <p class="small mb-0 text-muted">Consider flying on weekdays for better deals</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="d-flex align-items-start">
+                <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                <div>
+                    <strong>Compare Options</strong>
+                    <p class="small mb-0 text-muted">Check different airlines and seat classes</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -70,4 +187,8 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        // Initialize wizard
+        navigateWizard('search');
+    </script>
 }

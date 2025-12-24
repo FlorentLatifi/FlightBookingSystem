@@ -1,212 +1,478 @@
 ﻿@model FlightBooking.Application.DTOs.CreateReservationDto
 
 @{
-    ViewData["Title"] = "Rezervo Fluturimin";
+    ViewData["Title"] = "Complete Booking";
     var flight = ViewBag.Flight as FlightBooking.Application.DTOs.FlightDto;
 }
 
-<div class="mb-4">
-    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
-        ← Kthehu te kërkimi
-    </a>
-</div>
-
-<div class="text-center mb-4">
-    <h2>🎫 Rezervo Fluturimin</h2>
-    <p class="lead text-muted">Plotëso të dhënat për të përfunduar rezervimin</p>
+<!-- Wizard Progress Bar -->
+<div class="wizard-progress">
+    <div class="progress-steps">
+        <div class="progress-step completed">
+            <div class="step-icon"><i class="bi bi-check"></i></div>
+            <div class="step-label">Search</div>
+        </div>
+        <div class="progress-step completed">
+            <div class="step-icon"><i class="bi bi-check"></i></div>
+            <div class="step-label">Select Flight</div>
+        </div>
+        <div class="progress-step active">
+            <div class="step-icon">3</div>
+            <div class="step-label">Passenger Info</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">4</div>
+            <div class="step-label">Payment</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">5</div>
+            <div class="step-label">Confirmation</div>
+        </div>
+    </div>
 </div>
 
 @if (flight != null)
 {
-    <!-- Flight Summary -->
-    <div class="card shadow-lg mb-4">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">✈️ Detajet e Fluturimit</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>Fluturimi:</strong> @flight.FlightNumber</p>
-                    <p><strong>Linja Ajrore:</strong> @flight.Airline</p>
-                    <p><strong>Nga:</strong> @flight.DepartureAirport</p>
-                    <p><strong>Për në:</strong> @flight.ArrivalAirport</p>
+    <!-- Flight Summary Card (Sticky) -->
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Main Booking Form -->
+            <form asp-action="Create" method="post" id="bookingForm" onsubmit="return handleBookingSubmit(event)">
+                <input type="hidden" asp-for="FlightId" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Step 1: Passenger Information -->
+                <div class="modern-card mb-4" id="passengerStep">
+                    <div class="card-header-modern">
+                        <h3>
+                            <i class="bi bi-person-fill me-2"></i>
+                            Passenger Information
+                        </h3>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group-modern">
+                                <label asp-for="Passenger.FirstName" class="form-label-modern">
+                                    <i class="bi bi-person text-primary me-1"></i>
+                                    First Name
+                                </label>
+                                <input asp-for="Passenger.FirstName" class="form-control-modern" placeholder="John" required />
+                                <span asp-validation-for="Passenger.FirstName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group-modern">
+                                <label asp-for="Passenger.LastName" class="form-label-modern">
+                                    <i class="bi bi-person text-primary me-1"></i>
+                                    Last Name
+                                </label>
+                                <input asp-for="Passenger.LastName" class="form-control-modern" placeholder="Doe" required />
+                                <span asp-validation-for="Passenger.LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group-modern">
+                                <label asp-for="Passenger.Email" class="form-label-modern">
+                                    <i class="bi bi-envelope text-info me-1"></i>
+                                    Email Address
+                                </label>
+                                <input asp-for="Passenger.Email" type="email" class="form-control-modern" placeholder="john.doe@example.com" required />
+                                <span asp-validation-for="Passenger.Email" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group-modern">
+                                <label asp-for="Passenger.PhoneNumber" class="form-label-modern">
+                                    <i class="bi bi-phone text-success me-1"></i>
+                                    Phone Number
+                                </label>
+                                <input asp-for="Passenger.PhoneNumber" class="form-control-modern" placeholder="+383 44 123 456" required />
+                                <span asp-validation-for="Passenger.PhoneNumber" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group-modern">
+                                <label asp-for="Passenger.PassportNumber" class="form-label-modern">
+                                    <i class="bi bi-card-text text-warning me-1"></i>
+                                    Passport Number
+                                </label>
+                                <input asp-for="Passenger.PassportNumber" class="form-control-modern" placeholder="K12345678" required />
+                                <span asp-validation-for="Passenger.PassportNumber" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group-modern">
+                                <label asp-for="Passenger.DateOfBirth" class="form-label-modern">
+                                    <i class="bi bi-calendar text-danger me-1"></i>
+                                    Date of Birth
+                                </label>
+                                <input asp-for="Passenger.DateOfBirth" type="date" class="form-control-modern" max="@DateTime.Now.AddYears(-18).ToString("yyyy-MM-dd")" required />
+                                <span asp-validation-for="Passenger.DateOfBirth" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group-modern">
+                                <label asp-for="Passenger.Nationality" class="form-label-modern">
+                                    <i class="bi bi-flag text-primary me-1"></i>
+                                    Nationality
+                                </label>
+                                <input asp-for="Passenger.Nationality" class="form-control-modern" placeholder="Kosovo" required />
+                                <span asp-validation-for="Passenger.Nationality" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <p><strong>Nisja:</strong> @flight.DepartureTime.ToString("dd/MM/yyyy HH:mm")</p>
-                    <p><strong>Mbërritja:</strong> @flight.ArrivalTime.ToString("dd/MM/yyyy HH:mm")</p>
-                    <p><strong>Kohëzgjatja:</strong> @flight.FormattedDuration</p>
-                    <p><strong>Çmimi fillues:</strong> <span class="text-success fw-bold">€@flight.BasePrice.ToString("F2")</span></p>
+
+                <!-- Step 2: Seat Class Selection -->
+                <div class="modern-card mb-4" id="seatClassStep">
+                    <div class="card-header-modern">
+                        <h3>
+                            <i class="bi bi-badge-cc me-2"></i>
+                            Select Seat Class
+                        </h3>
+                    </div>
+
+                    <div class="strategy-selector" style="background: white; border: none; padding: 0;">
+                        <div class="strategy-options" style="grid-template-columns: repeat(2, 1fr);">
+                            <label class="strategy-option" style="cursor: pointer;">
+                                <input type="radio" asp-for="SeatClass" value="1" checked style="display: none;" />
+                                <div class="strategy-option-icon">🪑</div>
+                                <div class="strategy-option-name">Economy</div>
+                                <div class="strategy-option-desc">Base price</div>
+                                <div class="mt-2 fw-bold text-success" data-seat-price="@flight.BasePrice">€@flight.BasePrice.ToString("F2")</div>
+                            </label>
+
+                            <label class="strategy-option" style="cursor: pointer;">
+                                <input type="radio" asp-for="SeatClass" value="2" style="display: none;" />
+                                <div class="strategy-option-icon">✨</div>
+                                <div class="strategy-option-name">Premium Economy</div>
+                                <div class="strategy-option-desc">+50%</div>
+                                <div class="mt-2 fw-bold text-success" data-seat-price="@((flight.BasePrice * 1.5m).ToString("F2"))">€@((flight.BasePrice * 1.5m).ToString("F2"))</div>
+                            </label>
+
+                            <label class="strategy-option" style="cursor: pointer;">
+                                <input type="radio" asp-for="SeatClass" value="3" style="display: none;" />
+                                <div class="strategy-option-icon">💼</div>
+                                <div class="strategy-option-name">Business Class</div>
+                                <div class="strategy-option-desc">+150%</div>
+                                <div class="mt-2 fw-bold text-success" data-seat-price="@((flight.BasePrice * 2.5m).ToString("F2"))">€@((flight.BasePrice * 2.5m).ToString("F2"))</div>
+                            </label>
+
+                            <label class="strategy-option" style="cursor: pointer;">
+                                <input type="radio" asp-for="SeatClass" value="4" style="display: none;" />
+                                <div class="strategy-option-icon">👑</div>
+                                <div class="strategy-option-name">First Class</div>
+                                <div class="strategy-option-desc">+300%</div>
+                                <div class="mt-2 fw-bold text-success" data-seat-price="@((flight.BasePrice * 4.0m).ToString("F2"))">€@((flight.BasePrice * 4.0m).ToString("F2"))</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3 d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <small><strong>Strategy Pattern Demo:</strong> Pricing is calculated dynamically based on selected seat class</small>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment Information -->
+                <div class="modern-card mb-4" id="paymentStep">
+                    <div class="card-header-modern">
+                        <h3>
+                            <i class="bi bi-credit-card me-2"></i>
+                            Payment Information
+                        </h3>
+                    </div>
+
+                    <div class="alert alert-warning mb-3 d-flex align-items-center">
+                        <i class="bi bi-shield-check me-2"></i>
+                        <div>
+                            <small><strong>Test Mode:</strong> Use card ending with <strong>EVEN</strong> number for success, <strong>ODD</strong> for failure</small>
+                            <br><small class="text-muted">Example: 4242424242424242 = Success, 4242424242424243 = Fail</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group-modern mb-3">
+                        <label asp-for="PaymentDetails.PaymentMethod" class="form-label-modern">
+                            <i class="bi bi-wallet2 text-primary me-1"></i>
+                            Payment Method
+                        </label>
+                        <select asp-for="PaymentDetails.PaymentMethod" class="form-control-modern" required>
+                            <option value="Credit Card">💳 Credit Card</option>
+                            <option value="Debit Card">🏦 Debit Card</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group-modern mb-3">
+                        <label asp-for="PaymentDetails.CardNumber" class="form-label-modern">
+                            <i class="bi bi-credit-card-2-front text-success me-1"></i>
+                            Card Number
+                        </label>
+                        <input asp-for="PaymentDetails.CardNumber"
+                               class="form-control-modern"
+                               placeholder="1234 5678 9012 3456"
+                               maxlength="19"
+                               oninput="formatCardNumber(this)"
+                               required />
+                        <span asp-validation-for="PaymentDetails.CardNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group-modern mb-3">
+                        <label asp-for="PaymentDetails.CardHolderName" class="form-label-modern">
+                            <i class="bi bi-person-badge text-info me-1"></i>
+                            Cardholder Name
+                        </label>
+                        <input asp-for="PaymentDetails.CardHolderName" class="form-control-modern" placeholder="JOHN DOE" style="text-transform: uppercase;" required />
+                        <span asp-validation-for="PaymentDetails.CardHolderName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group-modern">
+                                <label asp-for="PaymentDetails.ExpiryDate" class="form-label-modern">
+                                    <i class="bi bi-calendar-date text-warning me-1"></i>
+                                    Expiry Date
+                                </label>
+                                <input asp-for="PaymentDetails.ExpiryDate"
+                                       class="form-control-modern"
+                                       placeholder="MM/YY"
+                                       maxlength="5"
+                                       oninput="formatExpiryDate(this)"
+                                       required />
+                                <span asp-validation-for="PaymentDetails.ExpiryDate" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group-modern">
+                                <label asp-for="PaymentDetails.CVV" class="form-label-modern">
+                                    <i class="bi bi-shield-lock text-danger me-1"></i>
+                                    CVV
+                                </label>
+                                <input asp-for="PaymentDetails.CVV"
+                                       type="password"
+                                       class="form-control-modern"
+                                       placeholder="123"
+                                       maxlength="4"
+                                       required />
+                                <span asp-validation-for="PaymentDetails.CVV" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-3 d-flex align-items-center">
+                        <i class="bi bi-lightning-fill me-2"></i>
+                        <small><strong>Observer Pattern Demo:</strong> Upon successful payment, Email & SMS notifications will be sent in parallel</small>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="modern-card text-center" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%);">
+                    <h5 class="fw-bold mb-3">Ready to Complete Booking?</h5>
+                    <p class="text-muted mb-4">By clicking "Complete Booking", you agree to the terms and proceed with payment</p>
+                    <button type="submit" class="btn-modern btn-primary-modern btn-lg-modern">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Complete Booking
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Sidebar: Flight Summary (Sticky) -->
+        <div class="col-lg-4">
+            <div style="position: sticky; top: 20px;">
+                <div class="modern-card" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
+                    <h4 class="fw-bold mb-4">
+                        <i class="bi bi-bookmark-fill me-2"></i>
+                        Booking Summary
+                    </h4>
+
+                    <!-- Flight Info -->
+                    <div class="mb-4">
+                        <div class="small opacity-75 mb-1">FLIGHT</div>
+                        <div class="fw-bold fs-5">@flight.FlightNumber</div>
+                        <div class="small opacity-90">@flight.Airline</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="small opacity-75 mb-1">ROUTE</div>
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <div class="fw-bold">@flight.DepartureAirport.Split('-')[0].Trim()</div>
+                                <div class="small opacity-90">@flight.DepartureTime.ToString("dd MMM, HH:mm")</div>
+                            </div>
+                            <div class="mx-3">
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold">@flight.ArrivalAirport.Split('-')[0].Trim()</div>
+                                <div class="small opacity-90">@flight.ArrivalTime.ToString("dd MMM, HH:mm")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="small opacity-75 mb-1">DURATION</div>
+                        <div class="fw-bold">@flight.FormattedDuration</div>
+                    </div>
+
+                    <hr style="border-color: rgba(255,255,255,0.2);">
+
+                    <!-- Pricing Breakdown -->
+                    <div class="mb-2 d-flex justify-content-between">
+                        <span>Base Price</span>
+                        <span class="fw-bold">€@flight.BasePrice.ToString("F2")</span>
+                    </div>
+                    <div class="mb-2 d-flex justify-content-between">
+                        <span>Seat Class Multiplier</span>
+                        <span class="fw-bold" id="seatMultiplier">1.0x</span>
+                    </div>
+
+                    <hr style="border-color: rgba(255,255,255,0.2);">
+
+                    <div class="d-flex justify-content-between fs-4 fw-bold">
+                        <span>Total</span>
+                        <span id="totalPrice">€@flight.BasePrice.ToString("F2")</span>
+                    </div>
+
+                    <div class="mt-3 small opacity-75 text-center">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Strategy Pattern: Price calculated dynamically
+                    </div>
+                </div>
+
+                <!-- Pattern Info -->
+                <div class="modern-card mt-3" style="background: rgba(255,255,255,0.95);">
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-gear-fill text-primary me-2"></i>
+                        Active Patterns
+                    </h6>
+                    <div class="small">
+                        <div class="mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>
+                            <strong>Strategy Pattern</strong>
+                            <div class="text-muted ps-4">Dynamic pricing calculation</div>
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>
+                            <strong>Observer Pattern</strong>
+                            <div class="text-muted ps-4">Parallel notifications (Email + SMS)</div>
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>
+                            <strong>Repository Pattern</strong>
+                            <div class="text-muted ps-4">Data access abstraction</div>
+                        </div>
+                        <div>
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>
+                            <strong>DTO Pattern</strong>
+                            <div class="text-muted ps-4">Data transfer objects</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 }
-
-<!-- Reservation Form -->
-<form asp-action="Create" method="post">
-    <input type="hidden" asp-for="FlightId" />
-    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-    <!-- Passenger Information -->
-    <div class="card shadow-lg mb-4">
-        <div class="card-header bg-info text-white">
-            <h5 class="mb-0">👤 Të Dhënat e Pasagjerit</h5>
-        </div>
-        <div class="card-body">
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label asp-for="Passenger.FirstName" class="form-label fw-bold">Emri</label>
-                    <input asp-for="Passenger.FirstName" class="form-control" placeholder="p.sh. Filan" />
-                    <span asp-validation-for="Passenger.FirstName" class="text-danger"></span>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="Passenger.LastName" class="form-label fw-bold">Mbiemri</label>
-                    <input asp-for="Passenger.LastName" class="form-control" placeholder="p.sh. Fisteku" />
-                    <span asp-validation-for="Passenger.LastName" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label asp-for="Passenger.Email" class="form-label fw-bold">Email</label>
-                    <input asp-for="Passenger.Email" type="email" class="form-control" placeholder="p.sh. filan@example.com" />
-                    <span asp-validation-for="Passenger.Email" class="text-danger"></span>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="Passenger.PhoneNumber" class="form-label fw-bold">Telefoni</label>
-                    <input asp-for="Passenger.PhoneNumber" class="form-control" placeholder="p.sh. +383 44 123 456" />
-                    <span asp-validation-for="Passenger.PhoneNumber" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label asp-for="Passenger.PassportNumber" class="form-label fw-bold">Numri i Pasaportës</label>
-                    <input asp-for="Passenger.PassportNumber" class="form-control" placeholder="p.sh. K12345678" />
-                    <span asp-validation-for="Passenger.PassportNumber" class="text-danger"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="Passenger.DateOfBirth" class="form-label fw-bold">Data e Lindjes</label>
-                    <input asp-for="Passenger.DateOfBirth" type="date" class="form-control" />
-                    <span asp-validation-for="Passenger.DateOfBirth" class="text-danger"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="Passenger.Nationality" class="form-label fw-bold">Kombësia</label>
-                    <input asp-for="Passenger.Nationality" class="form-control" placeholder="p.sh. Kosovare" />
-                    <span asp-validation-for="Passenger.Nationality" class="text-danger"></span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Seat Class Selection -->
-    <div class="card shadow-lg mb-4">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0">💺 Zgjedh Klasën e Ulëses</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-3 mb-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="SeatClass" value="1" id="economy" checked />
-                        <label class="form-check-label fw-bold" for="economy">
-                            Economy Class
-                        </label>
-                        <p class="small text-muted mb-0">Çmimi bazë</p>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="SeatClass" value="2" id="premiumeconomy" />
-                        <label class="form-check-label fw-bold" for="premiumeconomy">
-                            Premium Economy
-                        </label>
-                        <p class="small text-muted mb-0">+50% e çmimit bazë</p>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="SeatClass" value="3" id="business" />
-                        <label class="form-check-label fw-bold" for="business">
-                            Business Class
-                        </label>
-                        <p class="small text-muted mb-0">+150% e çmimit bazë</p>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="SeatClass" value="4" id="firstclass" />
-                        <label class="form-check-label fw-bold" for="firstclass">
-                            First Class
-                        </label>
-                        <p class="small text-muted mb-0">+300% e çmimit bazë</p>
-                    </div>
-                </div>
-            </div>
-            <span asp-validation-for="SeatClass" class="text-danger"></span>
-        </div>
-    </div>
-
-    <!-- Payment Information -->
-    <div class="card shadow-lg mb-4">
-        <div class="card-header bg-warning text-dark">
-            <h5 class="mb-0">💳 Të Dhënat e Pagesës</h5>
-        </div>
-        <div class="card-body">
-            <div class="alert alert-info">
-                <strong>ℹ️ Shënim:</strong> Ky është një sistem demonstrativ. Të dhënat e kartës nuk ruhen dhe nuk procesohen në realitet.
-                <br><strong>Për test:</strong> Përdor kartë me numër që përfundon me numër <strong>ÇIFT</strong> për sukses, ose <strong>TEK</strong> për dështim.
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="PaymentDetails.PaymentMethod" class="form-label fw-bold">Metoda e Pagesës</label>
-                <select asp-for="PaymentDetails.PaymentMethod" class="form-select">
-                    <option value="Credit Card">Kartë Krediti</option>
-                    <option value="Debit Card">Kartë Debiti</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="PaymentDetails.CardNumber" class="form-label fw-bold">Numri i Kartës</label>
-                <input asp-for="PaymentDetails.CardNumber" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19" />
-                <span asp-validation-for="PaymentDetails.CardNumber" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="PaymentDetails.CardHolderName" class="form-label fw-bold">Emri në Kartë</label>
-                <input asp-for="PaymentDetails.CardHolderName" class="form-control" placeholder="FILAN FISTEKU" />
-                <span asp-validation-for="PaymentDetails.CardHolderName" class="text-danger"></span>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label asp-for="PaymentDetails.ExpiryDate" class="form-label fw-bold">Data e Skadimit</label>
-                    <input asp-for="PaymentDetails.ExpiryDate" class="form-control" placeholder="MM/YY" maxlength="5" />
-                    <span asp-validation-for="PaymentDetails.ExpiryDate" class="text-danger"></span>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label asp-for="PaymentDetails.CVV" class="form-label fw-bold">CVV</label>
-                    <input asp-for="PaymentDetails.CVV" class="form-control" placeholder="123" maxlength="4" />
-                    <span asp-validation-for="PaymentDetails.CVV" class="text-danger"></span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Submit Button -->
-    <div class="card shadow-lg mb-4">
-        <div class="card-body text-center p-4">
-            <h5 class="mb-3">📝 Konfirmo Rezervimin</h5>
-            <p class="text-muted">Duke klikuar "Përfundo Rezervimin", ti pranon kushtet dhe procedon me pagesën.</p>
-            <button type="submit" class="btn btn-success btn-lg px-5">
-                ✅ Përfundo Rezervimin
-            </button>
-        </div>
-    </div>
-</form>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        // Initialize wizard
+        navigateWizard('payment');
+
+        // Update insights
+        updateInsights({
+            services: ['ReservationService', 'PaymentService', 'NotificationService'],
+            patterns: ['Strategy Pattern', 'Observer Pattern', 'DTO Pattern']
+        });
+
+        // Card number formatting
+        function formatCardNumber(input) {
+            let value = input.value.replace(/\s/g, '');
+            let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+            input.value = formatted;
+        }
+
+        // Expiry date formatting
+        function formatExpiryDate(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            input.value = value;
+        }
+
+        // Seat class selection handler
+        document.querySelectorAll('input[name="SeatClass"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Update visual selection
+                document.querySelectorAll('.strategy-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                this.closest('.strategy-option').classList.add('active');
+
+                // Update price
+                const multipliers = { '1': 1.0, '2': 1.5, '3': 2.5, '4': 4.0 };
+                const basePrice = @flight.BasePrice;
+                const multiplier = multipliers[this.value];
+                const totalPrice = basePrice * multiplier;
+
+                document.getElementById('seatMultiplier').textContent = multiplier.toFixed(1) + 'x';
+                document.getElementById('totalPrice').textContent = '€' + totalPrice.toFixed(2);
+
+                // Update insights
+                updateInsights({
+                    services: ['ReservationService', 'PricingStrategy'],
+                    patterns: ['Strategy Pattern']
+                });
+            });
+        });
+
+        // Form submission handler
+        function handleBookingSubmit(event) {
+            event.preventDefault();
+
+            // Validate form
+            if (!validateForm('bookingForm')) {
+                return false;
+            }
+
+            // Show loading
+            showLoading('Processing your booking...');
+
+            // Update insights
+            updateInsights({
+                services: ['ReservationService', 'PaymentService', 'NotificationService'],
+                patterns: ['Strategy Pattern', 'Observer Pattern', 'Parallel Processing']
+            });
+
+            // Simulate parallel processing notifications
+            setTimeout(() => {
+                showNotification('email', 'Payment Processing Started', 'Payment gateway is processing your transaction...');
+            }, 1000);
+
+            setTimeout(() => {
+                showNotification('sms', 'Notification Queue Started', 'Email and SMS notifications are being prepared in parallel...');
+            }, 1500);
+
+            // Submit form after delays
+            setTimeout(() => {
+                event.target.submit();
+            }, 2000);
+
+            return false;
+        }
+
+        // Initialize first seat class as selected
+        document.querySelector('.strategy-option').classList.add('active');
+    </script>
 }

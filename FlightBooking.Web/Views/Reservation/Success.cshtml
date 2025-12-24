@@ -1,113 +1,263 @@
 ﻿@model FlightBooking.Application.DTOs.ReservationDto
 
 @{
-    ViewData["Title"] = "Rezervimi u Përfundua me Sukses";
+    ViewData["Title"] = "Booking Successful";
 }
 
-<div class="text-center mb-5">
-    <div class="mb-4">
-        <span style="font-size: 80px;">✅</span>
+<!-- Wizard Progress Bar -->
+<div class="wizard-progress">
+    <div class="progress-steps">
+        <div class="progress-step completed">
+            <div class="step-icon"><i class="bi bi-check"></i></div>
+            <div class="step-label">Search</div>
+        </div>
+        <div class="progress-step completed">
+            <div class="step-icon"><i class="bi bi-check"></i></div>
+            <div class="step-label">Select Flight</div>
+        </div>
+        <div class="progress-step completed">
+            <div class="step-icon"><i class="bi bi-check"></i></div>
+            <div class="step-label">Passenger Info</div>
+        </div>
+        <div class="progress-step completed">
+            <div class="step-icon"><i class="bi bi-check"></i></div>
+            <div class="step-label">Payment</div>
+        </div>
+        <div class="progress-step active">
+            <div class="step-icon"><i class="bi bi-check-lg"></i></div>
+            <div class="step-label">Confirmation</div>
+        </div>
     </div>
-    <h1 class="display-4 text-success">Rezervimi u Përfundua me Sukses!</h1>
-    <p class="lead">Udhëtim të këndshëm!</p>
 </div>
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <!-- Reservation Code -->
-        <div class="alert alert-success text-center shadow-lg mb-4" role="alert">
-            <h4 class="alert-heading">🎫 Kodi i Rezervimit</h4>
-            <hr>
-            <h2 class="display-5 fw-bold">@Model.ReservationCode</h2>
-            <hr>
-            <p class="mb-0">Ruaje këtë kod! Do të të duhet për check-in.</p>
+<!-- Success Animation -->
+<div class="modern-card text-center mb-4">
+    <div class="success-animation">
+        <div class="checkmark-circle">
+            <i class="bi bi-check-lg checkmark"></i>
         </div>
+        <h1 class="display-4 fw-bold mb-3" style="color: var(--success-color);">
+            Booking Successful!
+        </h1>
+        <p class="lead text-muted">Your flight has been booked successfully</p>
+    </div>
+</div>
 
-        <!-- Flight Details -->
-        <div class="card shadow-lg mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">✈️ Detajet e Fluturimit</h5>
+<!-- Reservation Code -->
+<div class="modern-card text-center mb-4" style="background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%); color: white;">
+    <div class="mb-3">
+        <i class="bi bi-ticket-perforated" style="font-size: 3rem;"></i>
+    </div>
+    <h3 class="fw-bold mb-2">Reservation Code</h3>
+    <div style="font-size: 2.5rem; font-weight: 700; letter-spacing: 0.2em; font-family: 'Courier New', monospace;">
+        @Model.ReservationCode
+    </div>
+    <p class="mt-3 mb-0 opacity-90">
+        <i class="bi bi-info-circle me-1"></i>
+        Save this code for check-in
+    </p>
+</div>
+
+<div class="row">
+    <!-- Flight Details -->
+    <div class="col-lg-8">
+        <div class="modern-card mb-4">
+            <div class="card-header-modern">
+                <h3>
+                    <i class="bi bi-airplane-fill me-2"></i>
+                    Flight Details
+                </h3>
             </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <p><strong>Fluturimi:</strong> @Model.Flight.FlightNumber</p>
-                        <p><strong>Linja Ajrore:</strong> @Model.Flight.Airline</p>
+
+            <div class="flight-card" style="border: none; box-shadow: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-airplane-fill text-primary me-2" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <div class="fw-bold">@Model.Flight.Airline</div>
+                            <div class="small text-muted">@Model.Flight.FlightNumber</div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <p><strong>Status:</strong> <span class="badge bg-success">@Model.StatusText</span></p>
-                        <p><strong>Data e Rezervimit:</strong> @Model.ReservationDate.ToString("dd/MM/yyyy HH:mm")</p>
-                    </div>
+                    <span class="badge bg-success fs-6">
+                        <i class="bi bi-check-circle-fill me-1"></i>
+                        @Model.StatusText
+                    </span>
                 </div>
 
-                <hr>
-
-                <div class="row text-center mb-3">
-                    <div class="col-md-6">
-                        <div class="border rounded p-3">
-                            <h6 class="text-muted">✈️ Nisja</h6>
-                            <h4>@Model.Flight.DepartureAirport.Split('-')[0].Trim()</h4>
-                            <p class="mb-0">@Model.Flight.DepartureTime.ToString("dd/MM/yyyy HH:mm")</p>
-                        </div>
+                <div class="flight-route">
+                    <div class="flight-location">
+                        <div class="flight-location-code">@Model.Flight.DepartureAirport.Split('-')[0].Trim()</div>
+                        <div class="flight-location-name">@Model.Flight.DepartureAirport.Split('-').Last().Trim()</div>
+                        <div class="small text-muted">@Model.Flight.DepartureTime.ToString("dd MMM yyyy")</div>
+                        <div class="fw-bold text-primary">@Model.Flight.DepartureTime.ToString("HH:mm")</div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="border rounded p-3">
-                            <h6 class="text-muted">🛬 Mbërritja</h6>
-                            <h4>@Model.Flight.ArrivalAirport.Split('-')[0].Trim()</h4>
-                            <p class="mb-0">@Model.Flight.ArrivalTime.ToString("dd/MM/yyyy HH:mm")</p>
-                        </div>
+                    <div class="flight-arrow">
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+                    <div class="flight-location">
+                        <div class="flight-location-code">@Model.Flight.ArrivalAirport.Split('-')[0].Trim()</div>
+                        <div class="flight-location-name">@Model.Flight.ArrivalAirport.Split('-').Last().Trim()</div>
+                        <div class="small text-muted">@Model.Flight.ArrivalTime.ToString("dd MMM yyyy")</div>
+                        <div class="fw-bold text-success">@Model.Flight.ArrivalTime.ToString("HH:mm")</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Passenger Details -->
-        <div class="card shadow-lg mb-4">
-            <div class="card-header bg-info text-white">
-                <h5 class="mb-0">👤 Detajet e Pasagjerit</h5>
+        <div class="modern-card mb-4">
+            <div class="card-header-modern">
+                <h3>
+                    <i class="bi bi-person-fill me-2"></i>
+                    Passenger Information
+                </h3>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Emri i plotë:</strong> @Model.Passenger.FullName</p>
-                        <p><strong>Email:</strong> @Model.Passenger.Email</p>
-                    </div>
-                    <div class="col-md-6">
-                        <p><strong>Klasa e ulëses:</strong> <span class="badge bg-primary">@Model.SeatClass</span></p>
-                        <p><strong>Numri i ulëses:</strong> <span class="badge bg-secondary">@Model.SeatNumber</span></p>
-                    </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="small text-muted mb-1">PASSENGER NAME</div>
+                    <div class="fw-bold fs-5">@Model.Passenger.FullName</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="small text-muted mb-1">CONTACT EMAIL</div>
+                    <div class="fw-bold">@Model.Passenger.Email</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="small text-muted mb-1">SEAT CLASS</div>
+                    <span class="badge bg-primary fs-6">@Model.SeatClass</span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="small text-muted mb-1">SEAT NUMBER</div>
+                    <span class="badge bg-secondary fs-6">@Model.SeatNumber</span>
                 </div>
             </div>
         </div>
 
-        <!-- Payment Details -->
-        <div class="card shadow-lg mb-4">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">💰 Detajet e Pagesës</h5>
+        <!-- Payment Summary -->
+        <div class="modern-card mb-4">
+            <div class="card-header-modern" style="background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);">
+                <h3>
+                    <i class="bi bi-credit-card me-2"></i>
+                    Payment Confirmed
+                </h3>
             </div>
-            <div class="card-body text-center">
-                <h3 class="text-success">€@Model.TotalPrice.ToString("F2")</h3>
-                <p class="text-muted mb-0">Pagesa u krye me sukses!</p>
+
+            <div class="text-center py-4">
+                <div class="display-4 fw-bold text-success mb-2">
+                    €@Model.TotalPrice.ToString("F2")
+                </div>
+                <div class="text-muted">Payment processed successfully</div>
+                <div class="mt-3">
+                    <span class="badge bg-success" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                        <i class="bi bi-shield-check me-1"></i>
+                        Secured Transaction
+                    </span>
+                </div>
+            </div>
+
+            <div class="alert alert-info mb-0 d-flex align-items-center">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <small><strong>Observer Pattern:</strong> Confirmation emails and SMS have been sent in parallel</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Notifications Status -->
+        <div class="modern-card mb-4" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%); border: 2px solid var(--primary-color);">
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-bell-fill text-primary me-2"></i>
+                Notifications Sent
+            </h5>
+
+            <div class="mb-3 p-3 bg-white rounded">
+                <div class="d-flex align-items-center">
+                    <div class="me-3" style="width: 40px; height: 40px; border-radius: 50%; background: #dbeafe; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-envelope-fill"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold">Email Sent</div>
+                        <div class="small text-muted">To: @Model.Passenger.Email</div>
+                        <div class="small text-success">
+                            <i class="bi bi-check-circle-fill me-1"></i>
+                            Delivered
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3 bg-white rounded">
+                <div class="d-flex align-items-center">
+                    <div class="me-3" style="width: 40px; height: 40px; border-radius: 50%; background: #d1fae5; color: #10b981; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-phone-fill"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold">SMS Sent</div>
+                        <div class="small text-muted">Confirmation message</div>
+                        <div class="small text-success">
+                            <i class="bi bi-check-circle-fill me-1"></i>
+                            Delivered
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-3 text-center small text-muted">
+                <i class="bi bi-lightning-fill text-warning me-1"></i>
+                Processed in parallel using Observer Pattern
             </div>
         </div>
 
-        <!-- Notifications Info -->
-        <div class="alert alert-info" role="alert">
-            <h5 class="alert-heading">📧 Njoftime</h5>
-            <p class="mb-0">
-                <strong>Email dhe SMS</strong> konfirmimi janë dërguar te:
-                <br>📧 <strong>@Model.Passenger.Email</strong>
-            </p>
+        <!-- Next Steps -->
+        <div class="modern-card mb-4">
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-list-check text-primary me-2"></i>
+                Next Steps
+            </h5>
+
+            <ol class="mb-0 ps-3">
+                <li class="mb-2">Check your email for booking confirmation</li>
+                <li class="mb-2">Save your reservation code: <strong>@Model.ReservationCode</strong></li>
+                <li class="mb-2">Online check-in opens 24 hours before departure</li>
+                <li class="mb-0">Arrive at airport 2 hours before departure</li>
+            </ol>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="text-center mt-4">
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg me-3">
-                🏠 Kthehu në Kryefaqe
-            </a>
-            <button onclick="window.print()" class="btn btn-secondary btn-lg">
-                🖨️ Printo Konfirmimin
+        <!-- Actions -->
+        <div class="d-grid gap-2">
+            <button onclick="window.print()" class="btn-modern btn-primary-modern">
+                <i class="bi bi-printer me-2"></i>
+                Print Confirmation
             </button>
+            <a asp-controller="Home" asp-action="Index" class="btn-modern" style="background: white; color: var(--primary-color); border: 2px solid var(--primary-color);">
+                <i class="bi bi-house me-2"></i>
+                Book Another Flight
+            </a>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Initialize wizard
+        navigateWizard('confirmation');
+
+        // Update insights
+        updateInsights({
+            services: ['NotificationService', 'EmailService', 'ReservationService'],
+            patterns: ['Observer Pattern', 'DTO Pattern']
+        });
+
+        // Demo observer pattern notifications
+        demoObserverPattern('@Model.ReservationCode');
+
+        // Auto-open insights panel
+        setTimeout(() => {
+            const insights = document.getElementById('systemInsights');
+            if (insights && insights.classList.contains('collapsed')) {
+                toggleInsights();
+            }
+        }, 1000);
+    </script>
+}
