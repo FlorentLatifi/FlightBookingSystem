@@ -4,7 +4,6 @@ using FlightBooking.Web.Models;
 
 using FlightBooking.Application.DTOs;
 using FlightBooking.Application.Interfaces.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FlightBooking.Web.Controllers
 {

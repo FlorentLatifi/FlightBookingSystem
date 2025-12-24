@@ -33,25 +33,44 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 Console.WriteLine("✅ [Startup] Repositories u regjistruan!");
 
 // ============================================
-// 3. REGJISTRO BUSINESS SERVICES
-// ============================================
-Console.WriteLine("🔧 [Startup] Duke regjistruar business services...");
-builder.Services.AddScoped<IFlightService, FlightService>();
-builder.Services.AddScoped<IReservationService, ReservationService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
-Console.WriteLine("✅ [Startup] Business services u regjistruan!");
-
-// ============================================
-// 4. REGJISTRO INFRASTRUCTURE SERVICES
+// 3. REGJISTRO INFRASTRUCTURE SERVICES
+// (Duhet para Business Services sepse EmailService nevojitet për NotificationService)
 // ============================================
 Console.WriteLine("🔧 [Startup] Duke regjistruar infrastructure services...");
 builder.Services.AddScoped<IEmailService, EmailService>();
 Console.WriteLine("✅ [Startup] Infrastructure services u regjistruan!");
 
 // ============================================
+// 4. REGJISTRO BUSINESS SERVICES
+// ============================================
+Console.WriteLine("🔧 [Startup] Duke regjistruar business services...");
+builder.Services.AddScoped<IFlightService, FlightService>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+// ===== NOTIFICATION SERVICE ME OBSERVER PATTERN =====
+// Observers krijohen DIREKT brenda NotificationService
+builder.Services.AddScoped<INotificationService>(provider =>
+{
+    // Merr EmailService nga DI (duhet për EmailNotificationObserver)
+    var emailService = provider.GetRequiredService<IEmailService>();
+
+    // Krijo observers DIREKT (pa i regjistruar më parë në DI)
+    var observers = new List<INotificationObserver>
+    {
+        new EmailNotificationObserver(emailService),  // ✅ Email notification
+        new SmsNotificationObserver()                 // ✅ SMS notification (mock)
+    };
+
+    // Kthen NotificationService me observers të inicializuara
+    // ✅ SAKTË - Kalojmë të dy parametrat
+    return new NotificationService(emailService, observers);
+});
+Console.WriteLine("✅ [Startup] NotificationService u regjistrua me 2 observers (Email + SMS)!");
+
+// ============================================
 // 5. REGJISTRO STRATEGY PATTERN
-// Duke zgjedhur cilën strategji të përdorim
+// Duke zgjedhur cilën strategji të përdorim për llogaritjen e çmimeve
 // ============================================
 Console.WriteLine("🔧 [Startup] Duke regjistruar Pricing Strategy...");
 
@@ -71,34 +90,12 @@ Console.WriteLine("✅ [Startup] StandardPricingStrategy u aktivizua!");
 
 // 📝 DEMONSTRIM: Ndryshimi i strategjisë është SHUMË I THJESHTË!
 // Thjesht komento një rresht dhe aktivizo tjetrin. Gjithçka tjetër mbetet e njëjtë!
+// Kjo është fuqia e Strategy Pattern!
+
+Console.WriteLine("✅ [Startup] Business services u regjistruan!");
 
 // ============================================
-// 6. REGJISTRO OBSERVER PATTERN
-// Të gjithë observers që duam të njoftojmë
-// ============================================
-Console.WriteLine("🔧 [Startup] Duke regjistruar Observers...");
-
-// Regjistro çdo observer individualisht
-builder.Services.AddScoped<INotificationObserver, EmailNotificationObserver>();
-builder.Services.AddScoped<INotificationObserver, SmsNotificationObserver>();
-
-// Regjistro collection të të gjithë observers
-builder.Services.AddScoped<IEnumerable<INotificationObserver>>(provider =>
-{
-    return new List<INotificationObserver>
-    {
-        provider.GetRequiredService<EmailNotificationObserver>(),
-        provider.GetRequiredService<SmsNotificationObserver>()
-    };
-});
-
-Console.WriteLine("✅ [Startup] 2 Observers u regjistruan (Email + SMS)!");
-
-// 📝 DEMONSTRIM: Lehtë të shtosh observers të rinj!
-// Thjesht shto një rresht tjetër për observer të ri (p.sh. PushNotificationObserver)
-
-// ============================================
-// 7. REGJISTRO MVC CONTROLLERS & VIEWS
+// 6. REGJISTRO MVC CONTROLLERS & VIEWS
 // ============================================
 Console.WriteLine("🔧 [Startup] Duke regjistruar MVC...");
 builder.Services.AddControllersWithViews();
@@ -110,9 +107,9 @@ Console.WriteLine("✅ [Startup] MVC u konfigurua!");
 var app = builder.Build();
 
 // ============================================
-// 8. KRIJO BAZËN E TË DHËNAVE (nëse nuk ekziston)
+// 7. KRIJO BAZËN E TË DHËNAVE (nëse nuk ekziston)
 // ============================================
-Console.WriteLine("\n🔧 [Startup] Duke kontrolluar bazën e të dhënave...");
+Console.WriteLine("\n🔧 [Database] Duke kontrolluar bazën e të dhënave...");
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -121,23 +118,31 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<ApplicationDbContext>();
 
         // Krijo bazën nëse nuk ekziston
+        Console.WriteLine("🔧 [Database] Duke krijuar bazën (EnsureCreated)...");
         context.Database.EnsureCreated();
 
-        Console.WriteLine("✅ [Startup] Baza e të dhënave është gati!");
+        Console.WriteLine("✅ [Database] Baza e të dhënave është gati!");
+        Console.WriteLine($"📊 [Database] Connection: {context.Database.GetConnectionString()}");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ [Startup] ERROR gjatë krijimit të bazës: {ex.Message}");
+        Console.WriteLine($"❌ [Database] ERROR: {ex.Message}");
+        Console.WriteLine($"📄 [Database] StackTrace: {ex.StackTrace}");
     }
 }
 
 // ============================================
-// 9. MIDDLEWARE PIPELINE CONFIGURATION
+// 8. MIDDLEWARE PIPELINE CONFIGURATION
 // ============================================
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
+}
+else
+{
+    // Në development mode, shfaq exceptions të detajuara
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();
@@ -153,16 +158,30 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // ============================================
-// 10. PRINT SUMMARY & START
+// 9. PRINT SUMMARY & START
 // ============================================
 Console.WriteLine("\n============================================");
 Console.WriteLine("✅ FLIGHT BOOKING SYSTEM - GATI!");
 Console.WriteLine("============================================");
 Console.WriteLine("📦 Architecture: Onion Architecture");
-Console.WriteLine("🎯 Patterns: MVC + Repository + Strategy + Observer");
+Console.WriteLine("    ├── Domain Layer (Entities + Enums)");
+Console.WriteLine("    ├── Application Layer (Services + DTOs + Patterns)");
+Console.WriteLine("    ├── Infrastructure Layer (DbContext + Repositories)");
+Console.WriteLine("    └── Presentation Layer (MVC Controllers + Views)");
+Console.WriteLine("");
+Console.WriteLine("🎯 Design Patterns:");
+Console.WriteLine("    ├── MVC Pattern (Controllers + Views + Models)");
+Console.WriteLine("    ├── Repository Pattern (Data Access Abstraction)");
+Console.WriteLine("    ├── Strategy Pattern (Dynamic Pricing: Standard/Discount/Seasonal)");
+Console.WriteLine("    ├── Observer Pattern (Parallel Notifications: Email + SMS)");
+Console.WriteLine("    └── Dependency Injection (DI Container)");
+Console.WriteLine("");
 Console.WriteLine("💾 Database: SQL Server LocalDB");
-Console.WriteLine("🔧 DI Container: Microsoft.Extensions.DependencyInjection");
+Console.WriteLine("🔧 DI: Microsoft.Extensions.DependencyInjection");
+Console.WriteLine("🌐 Framework: ASP.NET Core 8.0 MVC");
 Console.WriteLine("============================================");
-Console.WriteLine("🚀 Aplikacioni po fillon...\n");
+Console.WriteLine("🚀 Aplikacioni po fillon...");
+Console.WriteLine("🌍 URL: https://localhost:XXXX");
+Console.WriteLine("============================================\n");
 
 app.Run();

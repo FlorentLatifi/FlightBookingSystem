@@ -5,7 +5,7 @@ using FlightBooking.Application.Interfaces.Repositories;
 using FlightBooking.Application.Interfaces.Services;
 using FlightBooking.Domain.Entities;
 using FlightBooking.Domain.Enums;
-using Microsoft.AspNetCore.Mvc;
+
 
 namespace FlightBooking.Web.Controllers
 {
@@ -119,10 +119,15 @@ namespace FlightBooking.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                _logger.LogWarning("Të dhënat e formës nuk janë të vlefshme");
-
-                // Rifut flight details në ViewBag
                 var flight = await _flightService.GetFlightDetailsAsync(createDto.FlightId);
+
+                if (flight == null)
+                {
+                    _logger.LogWarning("Fluturimi nuk u gjet gjatë validimit");
+                    TempData["ErrorMessage"] = "Fluturimi nuk u gjet.";
+                    return RedirectToAction("Index", "Home");
+                }
+
                 ViewBag.Flight = new FlightDto
                 {
                     Id = flight.Id,
@@ -140,6 +145,7 @@ namespace FlightBooking.Web.Controllers
 
                 return View(createDto);
             }
+
 
             try
             {
@@ -271,6 +277,13 @@ namespace FlightBooking.Web.Controllers
                     _logger.LogWarning("Rezervimi me kod {Code} nuk u gjet", reservationCode);
                     return RedirectToAction("Index", "Home");
                 }
+
+                if (reservation.Flight == null || reservation.Passenger == null)
+                {
+                    _logger.LogError("Rezervimi {Code} nuk ka Flight ose Passenger", reservationCode);
+                    return RedirectToAction("Index", "Home");
+                }
+
 
                 var reservationDto = new ReservationDto
                 {

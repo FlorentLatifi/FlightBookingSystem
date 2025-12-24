@@ -1,0 +1,54 @@
+﻿<div id="systemInsights" class="system-insights collapsed">
+    <button class="insights-toggle" onclick="toggleInsights()">
+        <i class="bi bi-code-slash"></i>
+    </button>
+
+    <div class="insights-content">
+        <h4 class="fw-bold mb-4">
+            <i class="bi bi-gear-fill text-primary me-2"></i>
+            System Insights
+        </h4>
+
+        <!-- Current Layer -->
+        <div class="insight-section">
+            <div class="insight-title">Current Layer</div>
+            <div class="insight-item">
+                <div class="insight-icon layer-presentation">
+                    <i class="bi bi-eye-fill"></i>
+                </div>
+                <div class="insight-text">
+                    <div class="insight-label">Active Layer</div>
+                    <div class="insight-value">Presentation (MVC)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Services -->
+        <div class="insight-section">
+            <div class="insight-title">Active Services</div>
+            <div id="activeServices">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- Design Patterns -->
+        <div class="insight-section">
+            <div class="insight-title">Design Patterns</div>
+            <div id="activePatterns">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- Architecture Info -->
+        <div class="insight-section">
+            <div class="insight-title">Architecture</div>
+            <div class="small text-muted">
+                <strong>Onion Architecture</strong><br>
+                ├── Domain (Core)<br>
+                ├── Application (Services)<br>
+                ├── Infrastructure (Data)<br>
+                └── Presentation (UI)
+            </div>
+        </div>
+    </div>
+</div>
