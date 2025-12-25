@@ -188,13 +188,14 @@ namespace FlightBooking.Web.Controllers
                 _logger.LogInformation("Rezervimi u krijua: {Code}", reservation.ReservationCode);
 
                 // =============================================
-                // HAPI 3: PROCESIMI PARALLEL
-                // 🔥 DEMONSTRON: PARALLEL PROCESSING (si në provim!)
-                // Pagesa dhe Njoftimi ndodhin NË TË NJËJTËN KOHË
+                // HAPI 3: PROCESIMI PARALLEL - REAL IMPLEMENTATION
+                // 🔥 DESIGN PATTERN: Parallel Processing (si në provim!)
+                // Pagesa dhe Përgatitja e Njoftimeve ndodhin NË TË NJËJTËN KOHË
                 // =============================================
-                Console.WriteLine("\n🔥🔥🔥 DUKE FILLUAR PROCESIMIN PARALLEL! 🔥🔥🔥\n");
+                _logger.LogInformation("\n🔥🔥🔥 [PARALLEL PROCESSING] Duke filluar procesimin paralel... 🔥🔥🔥\n");
+                Console.WriteLine("\n🔥🔥🔥 [PARALLEL PROCESSING] Duke filluar procesimin paralel... 🔥🔥🔥\n");
 
-                // Task 1: Proceso pagesën
+                // Task 1: Proceso pagesën (kryen komunikim me payment gateway)
                 var paymentTask = _paymentService.ProcessPaymentAsync(
                     reservation.Id,
                     reservation.TotalPrice,
@@ -204,19 +205,16 @@ namespace FlightBooking.Web.Controllers
                     createDto.PaymentDetails.CVV,
                     createDto.PaymentDetails.ExpiryDate);
 
-                // Task 2: Gjenero njoftimin (por ende nuk dërgohet)
-                // Në realitet, këtu do të përgatitej njoftimi
-                var notificationTask = Task.Run(async () =>
-                {
-                    Console.WriteLine("[Parallel Task] Njoftimi po përgatitet...");
-                    await Task.Delay(500); // Simulon përgatitjen
-                    Console.WriteLine("[Parallel Task] Njoftimi u përgatit!");
-                });
+                // Task 2: Përgatit njoftimet (gather data, prepare templates, etj.)
+                // Kjo mund të ekzekutohet PARALEL me pagesën sepse nuk varet nga rezultati
+                var notificationPrepTask = _notificationService.PrepareNotificationsAsync(reservation);
 
-                // Prit që TË DY task-et të përfundojnë
-                await Task.WhenAll(paymentTask, notificationTask);
+                // Prit që TË DY task-et të përfundojnë PARALEL
+                // DESIGN PATTERN: Parallel Processing - Task.WhenAll ekzekuton të dyja në të njëjtën kohë
+                await Task.WhenAll(paymentTask, notificationPrepTask);
 
-                Console.WriteLine("\n🎉 PROCESIMI PARALLEL PËRFUNDOI! 🎉\n");
+                _logger.LogInformation("✅ [PARALLEL PROCESSING] Të dyja task-et përfunduan!");
+                Console.WriteLine("\n🎉 [PARALLEL PROCESSING] Të dyja task-et përfunduan! 🎉\n");
 
                 var payment = await paymentTask;
 
@@ -225,17 +223,18 @@ namespace FlightBooking.Web.Controllers
                 // =============================================
                 if (payment.IsSuccessful)
                 {
-                    _logger.LogInformation("Pagesa u krye me sukses: {TransactionId}", payment.TransactionId);
+                    _logger.LogInformation("✅ Pagesa u krye me sukses: {TransactionId}", payment.TransactionId);
 
                     // Konfirmo rezervimin
                     await _reservationService.ConfirmReservationAsync(reservation.Id);
 
                     // =============================================
                     // HAPI 5: DËRGO NJOFTIME (OBSERVER PATTERN)
-                    // Email dhe SMS dërgohen NË PARALEL!
+                    // DESIGN PATTERN: Observer Pattern
+                    // Email dhe SMS observers ekzekutohen NË PARALEL!
                     // =============================================
-                    await _notificationService.SendReservationConfirmationAsync(reservation);
-                    await _notificationService.SendPaymentConfirmationAsync(payment);
+                    _logger.LogInformation("🔥 [OBSERVER PATTERN] Duke dërguar njoftimet e përgatitura...");
+                    await _notificationService.SendPreparedNotificationsAsync();
 
                     // Redirect te faqja e suksesit
                     return RedirectToAction("Success", new { reservationCode = reservation.ReservationCode });

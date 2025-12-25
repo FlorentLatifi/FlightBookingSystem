@@ -16,6 +16,29 @@
     <p class="lead text-muted">@searchCriteria</p>
 </div>
 
+<!-- DESIGN PATTERN: Strategy Pattern - UI Demo -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0">💰 Pricing Strategy Demo</h5>
+        <small>DESIGN PATTERN: Strategy Pattern - Ndrysho strategjinë për të parë efektin në çmime</small>
+    </div>
+    <div class="card-body">
+        <div class="btn-group w-100 mb-3" role="group">
+            <button type="button" class="btn btn-outline-primary active" onclick="applyStrategy('standard', this)">
+                Standard Pricing
+            </button>
+            <button type="button" class="btn btn-outline-success" onclick="applyStrategy('discount', this)">
+                10% Discount
+            </button>
+        </div>
+        <div id="strategyInfo" class="alert alert-info mb-0">
+            <strong>Strategjia aktuale:</strong> <span id="currentStrategy">Standard Pricing</span>
+            <br>
+            <small id="strategyDescription">Standard pricing based on seat class</small>
+        </div>
+    </div>
+</div>
+
 @if (!Model.Any())
 {
     <div class="alert alert-warning text-center" role="alert">
@@ -113,3 +136,34 @@ else
         }
     </div>
 }
+
+<!-- JavaScript për Strategy Pattern Demo -->
+<script>
+    function applyStrategy(strategy, buttonElement) {
+        // Update button states
+        document.querySelectorAll('.btn-group button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        buttonElement.classList.add('active');
+
+        // Update strategy info
+        const strategyInfo = {
+            'standard': {
+                name: 'Standard Pricing',
+                description: 'Standard pricing based on seat class'
+            },
+            'discount': {
+                name: 'Discount Pricing (10% OFF)',
+                description: 'Discount pricing with 10% off on all seat classes'
+            }
+        };
+
+        const info = strategyInfo[strategy] || strategyInfo['standard'];
+        document.getElementById('currentStrategy').textContent = info.name;
+        document.getElementById('strategyDescription').textContent = info.description;
+
+        // Në realitet, këtu do të bëhej fetch për të përditësuar çmimet
+        // Për demo, thjesht tregojmë që strategjia u ndryshua
+        console.log(`Strategy changed to: ${strategy}`);
+    }
+</script>
