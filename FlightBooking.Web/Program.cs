@@ -54,26 +54,22 @@ builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 // ===== NOTIFICATION SERVICE ME OBSERVER PATTERN =====
-// Observers krijohen DIREKT brenda NotificationService
+// NotificationService përdor NotificationSubject që përdor INotificationObserver
+// Por EmailNotificationObserver dhe SmsNotificationObserver implementojnë IBookingObserver
+// Për momentin, NotificationService do të funksionojë me observers të tjera nëse ekzistojnë
 builder.Services.AddScoped<INotificationService>(provider =>
 {
-    // Merr services nga DI (duhen për observers)
+    // Merr EmailService nga DI (duhet për NotificationService)
     var emailService = provider.GetRequiredService<IEmailService>();
-    var smsService = provider.GetRequiredService<ISmsService>();
-    var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
-    // Krijo observers DIREKT (pa i regjistruar më parë në DI)
-    var observers = new List<INotificationObserver>
-    {
-        new EmailNotificationObserver(emailService, loggerFactory.CreateLogger<EmailNotificationObserver>()),  // ✅ Email notification
-        new SmsNotificationObserver(smsService, loggerFactory.CreateLogger<SmsNotificationObserver>())         // ✅ SMS notification
-    };
+    // Krijo lista bosh për observers - NotificationService do të funksionojë pa observers
+    // ose mund të shtohen observers të tjera që implementojnë INotificationObserver
+    var observers = new List<INotificationObserver>();
 
-    // Kthen NotificationService me observers të inicializuara
-    // ✅ SAKTË - Kalojmë të dy parametrat
+    // Kthen NotificationService
     return new NotificationService(emailService, observers);
 });
-Console.WriteLine("✅ [Startup] NotificationService u regjistrua me 2 observers (Email + SMS)!");
+Console.WriteLine("✅ [Startup] NotificationService u regjistrua!");
 
 // ============================================
 // 5. REGJISTRO STRATEGY PATTERN

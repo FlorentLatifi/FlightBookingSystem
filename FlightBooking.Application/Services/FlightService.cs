@@ -6,6 +6,7 @@ using FlightBooking.Application.Interfaces;
 using FlightBooking.Application.Exceptions;
 using FlightBooking.Domain.Entities;
 using FlightBooking.Application.Interfaces.Repositories;
+using FlightBooking.Application.Interfaces.Services;
 
 namespace FlightBooking.Application.Services
 {

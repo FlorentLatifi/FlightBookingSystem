@@ -190,11 +190,11 @@ namespace FlightBooking.Infrastructure.Data
                     ArrivalAirport = "VIE - Vienna",
                     DepartureTime = DateTime.Now.AddDays(7).Date.AddHours(6),
                     ArrivalTime = DateTime.Now.AddDays(7).Date.AddHours(8),
-                    BasePrice = 49.99m,
+                    BasePriceAmount = 49.99m,
+                    BasePriceCurrency = "USD",
                     TotalSeats = 180,
                     AvailableSeats = 180,
-                    Status = FlightStatus.Scheduled,
-                    DurationMinutes = 120
+                    Status = FlightStatus.Scheduled
                 },
                 new Flight
                 {
@@ -205,11 +205,11 @@ namespace FlightBooking.Infrastructure.Data
                     ArrivalAirport = "MUC - Munich",
                     DepartureTime = DateTime.Now.AddDays(7).Date.AddHours(10),
                     ArrivalTime = DateTime.Now.AddDays(7).Date.AddHours(12),
-                    BasePrice = 89.99m,
+                    BasePriceAmount = 89.99m,
+                    BasePriceCurrency = "USD",
                     TotalSeats = 150,
                     AvailableSeats = 150,
-                    Status = FlightStatus.Scheduled,
-                    DurationMinutes = 120
+                    Status = FlightStatus.Scheduled
                 },
                 new Flight
                 {
@@ -220,11 +220,11 @@ namespace FlightBooking.Infrastructure.Data
                     ArrivalAirport = "VIE - Vienna",
                     DepartureTime = DateTime.Now.AddDays(10).Date.AddHours(14),
                     ArrivalTime = DateTime.Now.AddDays(10).Date.AddHours(16),
-                    BasePrice = 79.99m,
+                    BasePriceAmount = 79.99m,
+                    BasePriceCurrency = "USD",
                     TotalSeats = 120,
                     AvailableSeats = 120,
-                    Status = FlightStatus.Scheduled,
-                    DurationMinutes = 120
+                    Status = FlightStatus.Scheduled
                 },
                 new Flight
                 {
@@ -235,11 +235,11 @@ namespace FlightBooking.Infrastructure.Data
                     ArrivalAirport = "FCO - Rome",
                     DepartureTime = DateTime.Now.AddDays(5).Date.AddHours(8),
                     ArrivalTime = DateTime.Now.AddDays(5).Date.AddHours(10),
-                    BasePrice = 39.99m,
+                    BasePriceAmount = 39.99m,
+                    BasePriceCurrency = "USD",
                     TotalSeats = 189,
                     AvailableSeats = 189,
-                    Status = FlightStatus.Scheduled,
-                    DurationMinutes = 120
+                    Status = FlightStatus.Scheduled
                 },
                 new Flight
                 {
@@ -250,11 +250,11 @@ namespace FlightBooking.Infrastructure.Data
                     ArrivalAirport = "LHR - London Heathrow",
                     DepartureTime = DateTime.Now.AddDays(14).Date.AddHours(7),
                     ArrivalTime = DateTime.Now.AddDays(14).Date.AddHours(10).AddMinutes(30),
-                    BasePrice = 149.99m,
+                    BasePriceAmount = 149.99m,
+                    BasePriceCurrency = "USD",
                     TotalSeats = 200,
                     AvailableSeats = 200,
-                    Status = FlightStatus.Scheduled,
-                    DurationMinutes = 210
+                    Status = FlightStatus.Scheduled
                 }
             );
         }

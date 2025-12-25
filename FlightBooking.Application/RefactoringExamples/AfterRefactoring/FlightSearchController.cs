@@ -10,7 +10,10 @@ using FlightBooking.Application.Services;
 
 namespace FlightBooking.Application.RefactoringExamples.AfterRefactoring
 {
-    // Company.Application/RefactoringExamples/AfterRefactoring/FlightSearchController.cs
+    // FlightBooking.Application/RefactoringExamples/AfterRefactoring/FlightSearchController.cs
+    // NOTE: This is an example file for refactoring demonstration
+    // It uses ASP.NET Core types but is in Application layer for educational purposes
+    // In production, controllers should be in Web layer only
 
     /// <summary>
     /// AFTER REFACTORING - Improvements:
@@ -20,6 +23,8 @@ namespace FlightBooking.Application.RefactoringExamples.AfterRefactoring
     /// 4. Repository Pattern - data access extracted
     /// 5. Value Objects - Money, SearchCriteria
     /// </summary>
+    // COMMENTED OUT - This requires ASP.NET Core references which should not be in Application layer
+    /*
     public class FlightSearchController_New : Controller
     {
         private readonly IFlightService _flightService;
@@ -148,4 +153,5 @@ namespace FlightBooking.Application.RefactoringExamples.AfterRefactoring
             return results.OrderBy(r => r.Price.Amount).ToList();
         }
     }
+    */
 }

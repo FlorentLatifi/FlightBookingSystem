@@ -26,9 +26,9 @@ namespace FlightBooking.Infrastructure.Repositories
         public async Task<IEnumerable<Payment>> GetAllAsync()
         {
             return await _context.Payments
-                .Include(p => p.Reservation)
+                .Include(p => p.Reservation!)
                     .ThenInclude(r => r.Flight)
-                .Include(p => p.Reservation)
+                .Include(p => p.Reservation!)
                     .ThenInclude(r => r.Passenger)
                 .OrderByDescending(p => p.PaymentDate)
                 .ToListAsync();
@@ -37,9 +37,9 @@ namespace FlightBooking.Infrastructure.Repositories
         public async Task<Payment?> GetByIdAsync(int id)
         {
             return await _context.Payments
-                .Include(p => p.Reservation)
+                .Include(p => p.Reservation!)
                     .ThenInclude(r => r.Flight)
-                .Include(p => p.Reservation)
+                .Include(p => p.Reservation!)
                     .ThenInclude(r => r.Passenger)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
@@ -47,9 +47,9 @@ namespace FlightBooking.Infrastructure.Repositories
         public async Task<Payment?> GetByReservationIdAsync(int reservationId)
         {
             return await _context.Payments
-                .Include(p => p.Reservation)
+                .Include(p => p.Reservation!)
                     .ThenInclude(r => r.Flight)
-                .Include(p => p.Reservation)
+                .Include(p => p.Reservation!)
                     .ThenInclude(r => r.Passenger)
                 .FirstOrDefaultAsync(p => p.ReservationId == reservationId);
         }

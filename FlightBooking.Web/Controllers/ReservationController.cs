@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.Extensions.Logging;
 using FlightBooking.Application.DTOs;
 using FlightBooking.Application.Interfaces.Repositories;
 using FlightBooking.Application.Interfaces.Services;
@@ -223,7 +223,7 @@ namespace FlightBooking.Web.Controllers
                 // =============================================
                 // HAPI 4: KONTROLLO STATUSIN E PAGESËS
                 // =============================================
-                if (payment.IsSuccessful())
+                if (payment.IsSuccessful)
                 {
                     _logger.LogInformation("Pagesa u krye me sukses: {TransactionId}", payment.TransactionId);
 

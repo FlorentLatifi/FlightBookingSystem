@@ -8,7 +8,10 @@ using FlightBooking.Domain.ValueObjects;
 
 namespace FlightBooking.Application.RefactoringExamples.BeforeRefactoring
 {
-    // Company.Application/RefactoringExamples/BeforeRefactoring/FlightSearchController.cs
+    // FlightBooking.Application/RefactoringExamples/BeforeRefactoring/FlightSearchController.cs
+    // NOTE: This is an example file for refactoring demonstration
+    // It uses ASP.NET Core types but is in Application layer for educational purposes
+    // In production, controllers should be in Web layer only
 
     /// <summary>
     /// BEFORE REFACTORING - Bad Smells:
@@ -18,6 +21,8 @@ namespace FlightBooking.Application.RefactoringExamples.BeforeRefactoring
     /// 4. Primitive Obsession
     /// 5. No separation of concerns
     /// </summary>
+    // COMMENTED OUT - This requires ASP.NET Core references which should not be in Application layer
+    /*
     public class FlightSearchController_Old : Controller
     {
         [HttpPost]
@@ -113,4 +118,5 @@ namespace FlightBooking.Application.RefactoringExamples.BeforeRefactoring
             return View(flights);
         }
     }
+    */
 }
