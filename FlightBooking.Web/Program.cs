@@ -2,11 +2,12 @@
 using FlightBooking.Application.Interfaces.Services;
 using FlightBooking.Application.Observers;
 using FlightBooking.Application.Services;
-using FlightBooking.Application.Strategies;
+using FlightBooking.Application.Strategies.Pricing;
 using FlightBooking.Infrastructure.Data;
 using FlightBooking.Infrastructure.Repositories;
 using FlightBooking.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,10 +27,13 @@ Console.WriteLine("✅ [Startup] Baza e të dhënave u konfigurua!");
 // 2. REGJISTRO REPOSITORIES (Data Access Layer)
 // ============================================
 Console.WriteLine("🔧 [Startup] Duke regjistruar repositories...");
-builder.Services.AddScoped<IFlightRepository, FlightRepository>();
+builder.Services.AddScoped<FlightBooking.Application.Interfaces.Repositories.IFlightRepository, FlightRepository>();
+builder.Services.AddScoped<FlightBooking.Infrastructure.Repositories.IFlightRepository, FlightRepository>();
 builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 builder.Services.AddScoped<IPassengerRepository, PassengerRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<FlightBooking.Application.Interfaces.Repositories.IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<FlightBooking.Application.Interfaces.Repositories.ISeatRepository, SeatRepository>();
 Console.WriteLine("✅ [Startup] Repositories u regjistruan!");
 
 // ============================================
@@ -38,6 +42,7 @@ Console.WriteLine("✅ [Startup] Repositories u regjistruan!");
 // ============================================
 Console.WriteLine("🔧 [Startup] Duke regjistruar infrastructure services...");
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ISmsService, SmsService>();
 Console.WriteLine("✅ [Startup] Infrastructure services u regjistruan!");
 
 // ============================================
@@ -52,14 +57,16 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 // Observers krijohen DIREKT brenda NotificationService
 builder.Services.AddScoped<INotificationService>(provider =>
 {
-    // Merr EmailService nga DI (duhet për EmailNotificationObserver)
+    // Merr services nga DI (duhen për observers)
     var emailService = provider.GetRequiredService<IEmailService>();
+    var smsService = provider.GetRequiredService<ISmsService>();
+    var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
     // Krijo observers DIREKT (pa i regjistruar më parë në DI)
     var observers = new List<INotificationObserver>
     {
-        new EmailNotificationObserver(emailService),  // ✅ Email notification
-        new SmsNotificationObserver()                 // ✅ SMS notification (mock)
+        new EmailNotificationObserver(emailService, loggerFactory.CreateLogger<EmailNotificationObserver>()),  // ✅ Email notification
+        new SmsNotificationObserver(smsService, loggerFactory.CreateLogger<SmsNotificationObserver>())         // ✅ SMS notification
     };
 
     // Kthen NotificationService me observers të inicializuara

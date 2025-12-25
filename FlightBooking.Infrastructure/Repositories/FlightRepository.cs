@@ -16,7 +16,7 @@ namespace FlightBooking.Infrastructure.Repositories
     /// Implementimi i IFlightRepository
     /// Komunikon me bazën e të dhënave për operacione me Flights
     /// </summary>
-    public class FlightRepository : IFlightRepository
+    public class FlightRepository : IFlightRepository, FlightBooking.Application.Interfaces.Repositories.IFlightRepository
     {
         private readonly ApplicationDbContext _context;
 

@@ -13,33 +13,10 @@ namespace FlightBooking.Application.Interfaces.Services
     /// </summary>
     public interface IFlightService
     {
-        /// <summary>
-        /// Kërkon fluturime të disponueshme
-        /// </summary>
-        Task<IEnumerable<Flight>> SearchAvailableFlightsAsync(
-            string departureAirport,
-            string arrivalAirport,
-            DateTime departureDate);
-
-        /// <summary>
-        /// Merr detajet e një fluturimi
-        /// </summary>
+        Task<List<Flight>> SearchAvailableFlightsAsync(string origin, string destination, DateTime departureDate);
         Task<Flight?> GetFlightDetailsAsync(int flightId);
-
-        /// <summary>
-        /// Kontrollon nëse fluturimi ka vende të disponueshme
-        /// </summary>
         Task<bool> CheckAvailabilityAsync(int flightId, int numberOfSeats);
-
-        /// <summary>
-        /// Rezervon vende në fluturim (pakëson AvailableSeats)
-        /// </summary>
         Task ReserveSeatsAsync(int flightId, int numberOfSeats);
-
-        /// <summary>
-        /// Çliron vende në fluturim (shtoin AvailableSeats)
-        /// Përdoret kur anulohet rezervimi
-        /// </summary>
         Task ReleaseSeatsAsync(int flightId, int numberOfSeats);
     }
 }

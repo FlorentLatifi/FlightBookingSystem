@@ -1,78 +1,71 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
-using FlightBooking.Domain.Entities;
+using FlightBooking.Application.Interfaces;
+using FlightBooking.Application.Interfaces.Services;
+using Microsoft.Extensions.Logging;
 
 namespace FlightBooking.Application.Observers
 {
-    /// <summary>
-    /// Observer që dërgon njoftime përmes SMS
-    /// SHËNIM: Ky është një mock implementation për demonstrim
-    /// Në një aplikacion real, do të integrohet me një SMS gateway (Twilio, Nexmo, etj.)
-    /// </summary>
-    public class SmsNotificationObserver : INotificationObserver
+    public class SmsNotificationObserver : IBookingObserver
     {
-        public string ObserverName => "SMS Notification Observer";
+        private readonly ISmsService _smsService;
+        private readonly ILogger<SmsNotificationObserver> _logger;
 
-        /// <summary>
-        /// Dërgon SMS konfirmimi për rezervimin
-        /// </summary>
-        public async Task OnReservationConfirmedAsync(Reservation reservation)
+        public string ObserverName => "SMS Notification";
+
+        public SmsNotificationObserver(
+            ISmsService smsService,
+            ILogger<SmsNotificationObserver> logger)
         {
-            var message = $"Rezervimi juaj {reservation.ReservationCode} u konfirmua! " +
-                         $"Fluturimi: {reservation.Flight.FlightNumber} " +
-                         $"Nisja: {reservation.Flight.DepartureTime:dd/MM/yyyy HH:mm}";
-
-            await SendSmsAsync(reservation.Passenger.PhoneNumber, message);
-
-            Console.WriteLine($"[{ObserverName}] SMS konfirmimi u dërgua te: {reservation.Passenger.PhoneNumber}");
+            _smsService = smsService ?? throw new ArgumentNullException(nameof(smsService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        /// <summary>
-        /// Dërgon SMS anulimi
-        /// </summary>
-        public async Task OnReservationCancelledAsync(Reservation reservation)
+        public async Task NotifyAsync(BookingNotification notification)
         {
-            var message = $"Rezervimi juaj {reservation.ReservationCode} u anulua. " +
-                         $"Rimbursi: €{reservation.TotalPrice:F2}. " +
-                         $"Do të procesohet brenda 5-7 ditëve.";
+            try
+            {
+                _logger.LogInformation("[{ObserverName}] Processing notification: {NotificationType}",
+                    ObserverName, notification.Type);
 
-            await SendSmsAsync(reservation.Passenger.PhoneNumber, message);
+                // Only send SMS for critical updates
+                if (notification.Type == NotificationType.BookingConfirmed ||
+                    notification.Type == NotificationType.BookingCancelled)
+                {
+                    string message = GenerateSmsMessage(notification);
 
-            Console.WriteLine($"[{ObserverName}] SMS anulimi u dërgua te: {reservation.Passenger.PhoneNumber}");
+                    await _smsService.SendSmsAsync(
+                        notification.Booking.PassengerPhone,
+                        message);
+
+                    _logger.LogInformation("[{ObserverName}] SMS sent successfully", ObserverName);
+                }
+                else
+                {
+                    _logger.LogInformation("[{ObserverName}] Skipped SMS for notification type: {NotificationType}",
+                        ObserverName, notification.Type);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[{ObserverName}] Failed to send SMS", ObserverName);
+            }
         }
 
-        /// <summary>
-        /// Dërgon SMS konfirmimi për pagesën
-        /// </summary>
-        public async Task OnPaymentCompletedAsync(Payment payment)
+        private static string GenerateSmsMessage(BookingNotification notification)
         {
-            var message = $"Pagesa juaj €{payment.Amount:F2} u krye me sukses. " +
-                         $"Transaction ID: {payment.TransactionId}";
+            var booking = notification.Booking;
 
-            await SendSmsAsync(payment.Reservation.Passenger.PhoneNumber, message);
+            return notification.Type switch
+            {
+                NotificationType.BookingConfirmed =>
+                    $"Booking {booking.BookingReference} confirmed! Flight {booking.Flight.FlightNumber} on {booking.Flight.DepartureTime:dd MMM}.",
 
-            Console.WriteLine($"[{ObserverName}] SMS konfirmimi i pagesës u dërgua te: {payment.Reservation.Passenger.PhoneNumber}");
-        }
+                NotificationType.BookingCancelled =>
+                    $"Booking {booking.BookingReference} cancelled. Refund in 5-7 days.",
 
-        /// <summary>
-        /// Simulon dërgimin e SMS
-        /// Në një aplikacion real, këtu do të integrohej me një SMS gateway
-        /// </summary>
-        private async Task SendSmsAsync(string phoneNumber, string message)
-        {
-            // Simulojmë vonesën e dërgimit
-            await Task.Delay(100);
-
-            // Log në console për demonstrim
-            Console.WriteLine($"[SMS API Mock] Dërgohet SMS te {phoneNumber}:");
-            Console.WriteLine($"[SMS API Mock] Mesazhi: {message}");
-
-            // Në një aplikacion real, këtu do të thërritej API e SMS provider:
-            // await _smsClient.SendMessageAsync(phoneNumber, message);
+                _ => notification.Message
+            };
         }
     }
 }

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace FlightBooking.Domain.Enums
 {
-    public enum SeatClass
+    public enum BookingStatus
     {
-        Economy = 1,
-        PremiumEconomy = 2,
-        Business = 3,
-        FirstClass = 4
+        Pending = 1,
+        Confirmed = 2,
+        Cancelled = 3,
+        Completed = 4
     }
 }

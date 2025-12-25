@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 using FlightBooking.Application.Interfaces.Repositories;
 using FlightBooking.Application.Interfaces.Services;
-using FlightBooking.Application.Strategies;
+using FlightBooking.Application.Strategies.Pricing;
 using FlightBooking.Domain.Entities;
 using FlightBooking.Domain.Enums;
+using FlightBooking.Domain.ValueObjects;
+using IFlightRepository = FlightBooking.Application.Interfaces.Repositories.IFlightRepository;
 
 namespace FlightBooking.Application.Services
 {
@@ -66,8 +68,9 @@ namespace FlightBooking.Application.Services
 
             // Llogarit çmimin duke përdorur STRATEGY PATTERN
             Console.WriteLine($"[ReservationService] Duke llogaritur çmimin me strategjinë: {_pricingStrategy.StrategyName}");
-            var totalPrice = _pricingStrategy.CalculatePrice(flight.BasePrice, seatClass);
-            Console.WriteLine($"[ReservationService] Çmimi bazë: €{flight.BasePrice:F2}");
+            var totalPriceMoney = _pricingStrategy.CalculatePrice(flight, seatClass, 1);
+            var totalPrice = totalPriceMoney.Amount;
+            Console.WriteLine($"[ReservationService] Çmimi bazë: €{flight.BasePriceAmount:F2}");
             Console.WriteLine($"[ReservationService] Klasa: {seatClass}");
             Console.WriteLine($"[ReservationService] Çmimi total: €{totalPrice:F2}");
 

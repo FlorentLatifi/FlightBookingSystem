@@ -78,7 +78,7 @@ namespace FlightBooking.Web.Controllers
                     ArrivalAirport = f.ArrivalAirport,
                     DepartureTime = f.DepartureTime,
                     ArrivalTime = f.ArrivalTime,
-                    BasePrice = f.BasePrice,
+                    BasePrice = f.BasePriceAmount,
                     AvailableSeats = f.AvailableSeats,
                     Status = f.Status,
                     DurationMinutes = f.DurationMinutes

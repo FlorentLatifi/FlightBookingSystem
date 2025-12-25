@@ -90,7 +90,7 @@ namespace FlightBooking.Web.Controllers
                     ArrivalAirport = flight.ArrivalAirport,
                     DepartureTime = flight.DepartureTime,
                     ArrivalTime = flight.ArrivalTime,
-                    BasePrice = flight.BasePrice,
+                    BasePrice = flight.BasePriceAmount,
                     AvailableSeats = flight.AvailableSeats,
                     Status = flight.Status,
                     DurationMinutes = flight.DurationMinutes
@@ -137,7 +137,7 @@ namespace FlightBooking.Web.Controllers
                     ArrivalAirport = flight.ArrivalAirport,
                     DepartureTime = flight.DepartureTime,
                     ArrivalTime = flight.ArrivalTime,
-                    BasePrice = flight.BasePrice,
+                    BasePrice = flight.BasePriceAmount,
                     AvailableSeats = flight.AvailableSeats,
                     Status = flight.Status,
                     DurationMinutes = flight.DurationMinutes

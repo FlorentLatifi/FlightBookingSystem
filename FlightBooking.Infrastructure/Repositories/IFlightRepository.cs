@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using FlightBooking.Domain.Entities;
 
-namespace FlightBooking.Application.Interfaces.Repositories
+namespace FlightBooking.Infrastructure.Repositories
 {
     public interface IFlightRepository
     {
@@ -13,4 +13,3 @@ namespace FlightBooking.Application.Interfaces.Repositories
         Task DeleteAsync(int id);
     }
 }
-

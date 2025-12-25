@@ -10,25 +10,10 @@ namespace FlightBooking.Application.Interfaces.Services
     /// Interface për dërgimin e email-ave
     /// Implementimi do të jetë në Infrastructure layer
     /// </summary>
+    /// </summary>
+
     public interface IEmailService
     {
-        /// <summary>
-        /// Dërgon një email
-        /// </summary>
-        Task SendEmailAsync(
-            string toEmail,
-            string subject,
-            string body,
-            bool isHtml = true);
-
-        /// <summary>
-        /// Dërgon email me attachment
-        /// </summary>
-        Task SendEmailWithAttachmentAsync(
-            string toEmail,
-            string subject,
-            string body,
-            byte[] attachment,
-            string attachmentName);
+        Task SendEmailAsync(string to, string subject, string body);
     }
 }

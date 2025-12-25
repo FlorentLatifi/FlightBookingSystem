@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using FlightBooking.Application.Strategies.Pricing;
+using FlightBooking.Domain.Entities;
 using FlightBooking.Domain.Enums;
+using FlightBooking.Domain.ValueObjects;
 
-namespace FlightBooking.Application.Strategies
+namespace FlightBooking.Application.Strategies.Pricing
 {
     /// <summary>
     /// Strategjia e llogaritjes së çmimit me zbritje
@@ -19,17 +16,22 @@ namespace FlightBooking.Application.Strategies
 
         public string StrategyName => "Discount Pricing (10% OFF)";
 
-        public decimal CalculatePrice(decimal basePrice, SeatClass seatClass)
+        public Money CalculatePrice(Flight flight, SeatClass seatClass, int numberOfSeats)
         {
             // Fillimisht llogarit çmimin standard
             var standardStrategy = new StandardPricingStrategy();
-            var standardPrice = standardStrategy.CalculatePrice(basePrice, seatClass);
+            var standardPrice = standardStrategy.CalculatePrice(flight, seatClass, numberOfSeats);
 
             // Apliko zbritjen 10%
-            var discountAmount = standardPrice * DiscountPercentage;
+            var discountAmount = standardPrice.Multiply(DiscountPercentage);
             var finalPrice = standardPrice - discountAmount;
 
             return finalPrice;
+        }
+
+        public string GetDescription()
+        {
+            return "Discount pricing with 10% off on all seat classes";
         }
     }
 }

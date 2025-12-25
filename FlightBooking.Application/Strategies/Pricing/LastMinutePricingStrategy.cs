@@ -5,25 +5,27 @@ using FlightBooking.Domain.Enums;
 
 namespace FlightBooking.Application.Strategies.Pricing
 {
-    public class SeasonalPricingStrategy : IPricingStrategy
+    public class LastMinutePricingStrategy : IPricingStrategy
     {
+        private const decimal SurchargePercentage = 0.25m;
         private readonly StandardPricingStrategy _standardPricing;
 
-        public string StrategyName => "Seasonal Pricing";
+        public string StrategyName => "Last Minute";
 
-        public SeasonalPricingStrategy()
+        public LastMinutePricingStrategy()
         {
             _standardPricing = new StandardPricingStrategy();
         }
 
         public Money CalculatePrice(Flight flight, SeatClass seatClass, int numberOfSeats)
         {
+            var daysUntilDeparture = (flight.DepartureTime - DateTime.UtcNow).TotalDays;
+
             var standardPrice = _standardPricing.CalculatePrice(flight, seatClass, numberOfSeats);
 
-            // High season: June-August, December
-            if (IsHighSeason(flight.DepartureTime))
+            if (daysUntilDeparture < 3)
             {
-                return standardPrice * 1.3m; // 30% increase
+                return standardPrice * (1 + SurchargePercentage);
             }
 
             return standardPrice;
@@ -31,13 +33,7 @@ namespace FlightBooking.Application.Strategies.Pricing
 
         public string GetDescription()
         {
-            return "Seasonal pricing with 30% increase during high season (June-August, December)";
-        }
-
-        private static bool IsHighSeason(DateTime date)
-        {
-            int month = date.Month;
-            return month is >= 6 and <= 8 or 12; // Summer and December
+            return $"Last minute booking: {SurchargePercentage:P0} surcharge if booked less than 3 days before departure";
         }
     }
 }

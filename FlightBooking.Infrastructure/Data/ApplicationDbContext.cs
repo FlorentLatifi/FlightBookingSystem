@@ -26,6 +26,8 @@ namespace FlightBooking.Infrastructure.Data
         public DbSet<Passenger> Passengers => Set<Passenger>();
         public DbSet<Reservation> Reservations => Set<Reservation>();
         public DbSet<Payment> Payments => Set<Payment>();
+        public DbSet<Booking> Bookings => Set<Booking>();
+        public DbSet<Seat> Seats => Set<Seat>();
 
         /// <summary>
         /// Konfigurimi i marrëdhënieve dhe constraint-ave
