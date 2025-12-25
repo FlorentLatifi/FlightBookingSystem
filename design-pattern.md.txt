@@ -1,0 +1,226 @@
+# 🎯 DESIGN PATTERNS DOCUMENTATION
+
+## 1. MVC Pattern (Architectural)
+
+### Implementation
+```
+FlightBooking.Web/
+├── Controllers/
+│   ├── HomeController.cs
+│   └── ReservationController.cs
+├── Views/
+│   ├── Home/
+│   └── Reservation/
+└── Models/ (DTOs from Application layer)
+```
+
+### Why Used?
+- **Separation of Concerns**: UI, business logic, and data are separate
+- **Testability**: Can test controllers independently
+- **Maintainability**: Can change UI without touching business logic
+
+### Example
+```csharp
+// Controller (C)
+public class HomeController : Controller
+{
+    private readonly IFlightService _service; // Service handles logic
+    
+    public IActionResult Index()
+    {
+        return View(new FlightSearchDto()); // Model (M) to View (V)
+    }
+}
+```
+
+---
+
+## 2. Repository Pattern
+
+### Implementation
+```
+Application/Interfaces/Repositories/IFlightRepository.cs
+                ↓
+Infrastructure/Repositories/FlightRepository.cs
+```
+
+### Why Used?
+- **Abstraction**: Business logic doesn't know about EF Core
+- **Testability**: Can mock repositories for unit tests
+- **Flexibility**: Can switch from SQL Server to MongoDB without changing services
+
+### Example
+```csharp
+// Interface (in Application)
+public interface IFlightRepository
+{
+    Task<Flight?> GetByIdAsync(int id);
+}
+
+// Implementation (in Infrastructure)
+public class FlightRepository : IFlightRepository
+{
+    private readonly ApplicationDbContext _context;
+    
+    public async Task<Flight?> GetByIdAsync(int id)
+    {
+        return await _context.Flights.FindAsync(id);
+    }
+}
+
+// Usage (in Service)
+public class FlightService
+{
+    private readonly IFlightRepository _repo; // Depends on abstraction!
+    
+    public async Task<Flight?> GetFlight(int id)
+    {
+        return await _repo.GetByIdAsync(id);
+    }
+}
+```
+
+**What if we want to switch databases?**
+→ Just create `MongoFlightRepository : IFlightRepository` and register it in DI!
+
+---
+
+## 3. Strategy Pattern
+
+### Implementation
+```
+Application/Strategies/Pricing/
+├── IPricingStrategy.cs (interface)
+├── StandardPricingStrategy.cs
+├── DiscountPricingStrategy.cs
+└── SeasonalPricingStrategy.cs
+```
+
+### Why Used?
+- **Open/Closed Principle**: Open for extension, closed for modification
+- **Runtime Flexibility**: Can switch strategies at runtime
+- **Eliminates If-Else**: No more if-else chains for different pricing rules
+
+### Example
+```csharp
+// WITHOUT Strategy Pattern (BAD)
+public decimal CalculatePrice(Flight flight, string type)
+{
+    if (type == "standard")
+        return flight.BasePrice;
+    else if (type == "discount")
+        return flight.BasePrice * 0.9m;
+    else if (type == "seasonal")
+        // complex seasonal logic...
+    // ... more if-else statements
+}
+
+// WITH Strategy Pattern (GOOD)
+public interface IPricingStrategy
+{
+    Money CalculatePrice(Flight flight, SeatClass seatClass, int seats);
+}
+
+public class DiscountPricingStrategy : IPricingStrategy
+{
+    public Money CalculatePrice(Flight flight, SeatClass seatClass, int seats)
+    {
+        var standard = new StandardPricingStrategy();
+        var basePrice = standard.CalculatePrice(flight, seatClass, seats);
+        return basePrice * 0.9m; // 10% off
+    }
+}
+
+// Usage
+IPricingStrategy strategy = new DiscountPricingStrategy();
+var price = strategy.CalculatePrice(flight, SeatClass.Economy, 1);
+```
+
+**What if management wants a "Student Discount"?**
+→ Just create `StudentPricingStrategy : IPricingStrategy` and register it!
+
+---
+
+## 4. Observer Pattern
+
+### Implementation
+```
+Application/Observers/
+├── INotificationObserver.cs (interface)
+├── NotificationSubject.cs (subject)
+├── EmailNotificationObserver.cs
+├── SmsNotificationObserver.cs
+└── DatabaseLogObserver.cs
+```
+
+### Why Used?
+- **Loose Coupling**: Observers don't know about each other
+- **Extensibility**: Easy to add new notification types
+- **Parallel Processing**: All observers can be notified simultaneously
+
+### Example
+```csharp
+// WITHOUT Observer Pattern (BAD)
+public async Task ConfirmReservation(Reservation reservation)
+{
+    reservation.Status = ReservationStatus.Confirmed;
+    await _repository.UpdateAsync(reservation);
+    
+    // Tightly coupled to specific implementations
+    await _emailService.SendEmailAsync(...);
+    await _smsService.SendSmsAsync(...);
+    await _logService.LogAsync(...);
+    // What if we want to add WhatsApp? Must modify this code!
+}
+
+// WITH Observer Pattern (GOOD)
+public interface INotificationObserver
+{
+    Task NotifyAsync(ReservationNotification notification);
+}
+
+public class NotificationService
+{
+    private readonly List<INotificationObserver> _observers;
+    
+    public async Task NotifyAllAsync(ReservationNotification notification)
+    {
+        var tasks = _observers.Select(o => o.NotifyAsync(notification));
+        await Task.WhenAll(tasks); // PARALLEL!
+    }
+}
+
+// Adding WhatsApp is now trivial:
+public class WhatsAppNotificationObserver : INotificationObserver
+{
+    public async Task NotifyAsync(ReservationNotification notification)
+    {
+        // Send WhatsApp message
+    }
+}
+// Just register it in DI and it works!
+```
+
+**What if we want to add Push Notifications?**
+→ Just create `PushNotificationObserver : INotificationObserver` and register it!
+
+---
+
+## Summary: Why These Patterns?
+
+| Pattern | Problem Solved | Benefit |
+|---------|---------------|---------|
+| MVC | Mixed UI & logic | Separation of concerns |
+| Repository | Tight coupling to DB | Easy to test & switch DB |
+| Strategy | Complex if-else chains | Easy to add new algorithms |
+| Observer | Tight coupling in notifications | Easy to add new notification types |
+
+## Academic Justification
+
+These patterns are not "over-engineering" - they solve real problems:
+1. **Testability**: Can write unit tests easily
+2. **Maintainability**: Changes in one part don't break others
+3. **Extensibility**: Adding features doesn't require modifying existing code (Open/Closed)
+4. **SOLID Principles**: Each class has one responsibility, depends on abstractions
+
+**This is exactly what the course "Design Patterns & Refactoring" teaches!**

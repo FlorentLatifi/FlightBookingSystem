@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FlightBooking.Domain.ValueObjects;
 using FlightBooking.Domain.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FlightBooking.Domain.Entities
 {
@@ -9,11 +10,19 @@ namespace FlightBooking.Domain.Entities
     {
         public int Id { get; set; } // Public setter for EF Core
         public string FlightNumber { get; set; } = string.Empty;
+        
+        // Foreign Keys
+        public int DepartureAirportId { get; set; }
+        public int ArrivalAirportId { get; set; }
+        public int AirlineId { get; set; }
+        
+        // Legacy string properties (për backward compatibility - do të hiqen gradualisht)
         public string Origin { get; set; } = string.Empty;
         public string Destination { get; set; } = string.Empty;
         public string Airline { get; set; } = string.Empty;
         public string DepartureAirport { get; set; } = string.Empty;
         public string ArrivalAirport { get; set; } = string.Empty;
+        
         public DateTime DepartureTime { get; set; }
         public DateTime ArrivalTime { get; set; }
         public decimal BasePriceAmount { get; set; }
@@ -22,12 +31,16 @@ namespace FlightBooking.Domain.Entities
         public int AvailableSeats { get; set; }
         public FlightStatus Status { get; set; }
 
-        // Navigation properties
+        // Navigation properties (Foreign Keys)
+        public virtual Airport DepartureAirportEntity { get; set; } = null!;
+        public virtual Airport ArrivalAirportEntity { get; set; } = null!;
+        public virtual Airline AirlineEntity { get; set; } = null!;
         public virtual ICollection<Seat> Seats { get; set; } = new List<Seat>();
         public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 
         // Not mapped - computed property
+        [NotMapped]
         public Money BasePrice
         {
             get => new Money(BasePriceAmount, BasePriceCurrency);

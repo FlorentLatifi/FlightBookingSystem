@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FlightBooking.Domain.ValueObjects;
 using FlightBooking.Domain.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FlightBooking.Domain.Entities
 {
@@ -23,6 +24,7 @@ namespace FlightBooking.Domain.Entities
         public virtual Payment? Payment { get; set; }
 
         // Not mapped
+        [NotMapped]
         public Money TotalPrice
         {
             get => new Money(TotalPriceAmount, TotalPriceCurrency);

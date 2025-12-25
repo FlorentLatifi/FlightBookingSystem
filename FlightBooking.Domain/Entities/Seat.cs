@@ -1,6 +1,7 @@
 ﻿using System;
 using FlightBooking.Domain.ValueObjects;
 using FlightBooking.Domain.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FlightBooking.Domain.Entities
 {
@@ -16,6 +17,7 @@ namespace FlightBooking.Domain.Entities
         public virtual Booking? Booking { get; set; }
 
         // Not mapped
+        [NotMapped]
         public SeatNumber SeatNumber
         {
             get => SeatNumber.Parse(SeatNumberValue);
