@@ -6,6 +6,7 @@ using FlightBooking.Application.Strategies.Pricing;
 using FlightBooking.Infrastructure.Data;
 using FlightBooking.Infrastructure.Repositories;
 using FlightBooking.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -105,6 +106,17 @@ Console.WriteLine("✅ [Startup] Business services u regjistruan!");
 // ============================================
 // 6. REGJISTRO MVC CONTROLLERS & VIEWS
 // ============================================
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+});
 Console.WriteLine("🔧 [Startup] Duke regjistruar MVC...");
 builder.Services.AddControllersWithViews();
 Console.WriteLine("✅ [Startup] MVC u konfigurua!");
@@ -157,7 +169,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAuthorization();
 
 // Default route: Home/Index
