@@ -1,6 +1,41 @@
-﻿namespace FlightBooking.Web.Views.Passenger
+﻿@model IEnumerable<FlightBooking.Domain.Entities.Reservation>
+
+<h2 class="fw-bold mb-4">
+    <i class="bi bi-ticket-perforated text-primary me-2"></i>
+    My Bookings
+</h2>
+
+@if (!Model.Any())
 {
-    public class MyBookings
-    {
-    }
+    <div class="alert alert-info">You have no bookings</div>
+}
+else
+{
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Flight</th>
+                <th>Route</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.Flight.FlightNumber</td>
+                    <td>@r.Flight.DepartureAirport → @r.Flight.ArrivalAirport</td>
+                    <td>@r.Flight.DepartureTime.ToString("dd MMM yyyy")</td>
+                    <td>
+                        <span class="badge @(r.IsConfirmed ? "bg-success" : "bg-warning")">
+                            @(r.IsConfirmed ? "Confirmed" : "Pending")
+                        </span>
+                    </td>
+                    <td>€@r.TotalPrice.ToString("F2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }

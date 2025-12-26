@@ -1,6 +1,91 @@
-﻿namespace FlightBooking.Web.Views.Admin
-{
-    public class Reservations
-    {
-    }
+﻿@model IEnumerable<FlightBooking.Domain.Entities.Reservation>
+
+@{
+    ViewData["Title"] = "Admin - Reservations";
 }
+
+<div class="mb-4">
+    <h2 class="fw-bold">
+        <i class="bi bi-journal-check text-primary me-2"></i>
+        Reservations Management
+    </h2>
+    <p class="text-muted">All reservations in the system</p>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="modern-card text-center bg-primary text-white">
+            <h3 class="fw-bold">@Model.Count()</h3>
+            <p>Total Reservations</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="modern-card text-center bg-success text-white">
+            <h3 class="fw-bold">@Model.Count(r => r.IsConfirmed)</h3>
+            <p>Confirmed</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="modern-card text-center bg-warning text-white">
+            <h3 class="fw-bold">@Model.Count(r => !r.IsConfirmed)</h3>
+            <p>Pending</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="modern-card text-center bg-dark text-white">
+            <h3 class="fw-bold">€@Model.Sum(r => r.TotalPrice).ToString("F2")</h3>
+            <p>Total Revenue</p>
+        </div>
+    </div>
+</div>
+
+<div class="modern-card">
+    <div class="card-header-modern">
+        <h4><i class="bi bi-table me-2"></i>Reservations</h4>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center m-3">
+            No reservations found
+        </div>
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Reservation #</th>
+                    <th>Passenger</th>
+                    <th>Flight</th>
+                    <th>Date</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td><strong>@r.Id</strong></td>
+                        <td>@r.Passenger.FullName</td>
+                        <td>@r.Flight.FlightNumber</td>
+                        <td>@r.CreatedAt.ToString("dd MMM yyyy")</td>
+                        <td class="text-success">€@r.TotalPrice.ToString("F2")</td>
+                        <td>
+                            @if (r.IsConfirmed)
+                            {
+                                <span class="badge bg-success">Confirmed</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning">Pending</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
