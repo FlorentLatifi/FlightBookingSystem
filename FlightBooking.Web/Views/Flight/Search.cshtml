@@ -1,0 +1,46 @@
+﻿@model FlightBooking.Application.DTOs.FlightSearchDto
+
+@{
+    ViewData["Title"] = "Search Flights";
+}
+
+<h2>Search Flights</h2>
+
+<form asp-action="Search" method="post">
+    <div>
+        <label>Departure Airport</label><br />
+        <input asp-for="DepartureAirport" />
+        <span asp-validation-for="DepartureAirport"></span>
+    </div>
+
+    <div>
+        <label>Arrival Airport</label><br />
+        <input asp-for="ArrivalAirport" />
+        <span asp-validation-for="ArrivalAirport"></span>
+    </div>
+
+    <div>
+        <label>Departure Date</label><br />
+        <input asp-for="DepartureDate" type="date" />
+        <span asp-validation-for="DepartureDate"></span>
+    </div>
+
+    <div>
+        <label>Number of Passengers</label><br />
+        <input asp-for="NumberOfPassengers" type="number" min="1" max="10" />
+    </div>
+
+    <br />
+
+    <button type="submit">Search Flights</button>
+</form>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <ul>
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <li style="color:red">@error.ErrorMessage</li>
+        }
+    </ul>
+}

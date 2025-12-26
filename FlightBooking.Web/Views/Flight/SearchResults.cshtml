@@ -1,0 +1,51 @@
+﻿@model IEnumerable<FlightBooking.Domain.Entities.Flight>
+
+@{
+    ViewData["Title"] = "Search Results";
+}
+
+<h2>Available Flights</h2>
+
+@if (!Model.Any())
+{
+    <p>No flights found for the selected criteria.</p>
+}
+else
+{
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Flight Number</th>
+                <th>Airline</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Departure</th>
+                <th>Arrival</th>
+                <th>Available Seats</th>
+                <th>Price</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var flight in Model)
+            {
+                <tr>
+                    <td>@flight.FlightNumber</td>
+                    <td>@flight.Airline</td>
+                    <td>@flight.DepartureAirport</td>
+                    <td>@flight.ArrivalAirport</td>
+                    <td>@flight.DepartureTime.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@flight.ArrivalTime.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@flight.AvailableSeats</td>
+                    <td>@flight.BasePriceAmount @flight.BasePriceCurrency</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@flight.Id">
+                            Details
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
