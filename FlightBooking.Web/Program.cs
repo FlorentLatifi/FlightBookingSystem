@@ -171,7 +171,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseAuthorization();
+
 
 // Default route: Home/Index
 app.MapControllerRoute(

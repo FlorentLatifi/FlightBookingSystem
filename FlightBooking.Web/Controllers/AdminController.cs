@@ -10,6 +10,7 @@ namespace FlightBooking.Web.Controllers
     /// Controller për admin panel
     /// Shfaq statistika dhe menaxhim të fluturimeve/rezervimeve
     /// </summary>
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly IFlightRepository _flightRepository;

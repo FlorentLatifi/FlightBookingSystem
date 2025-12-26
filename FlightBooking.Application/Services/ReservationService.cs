@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using FlightBooking.Application.Common;
 using FlightBooking.Application.Interfaces.Repositories;
 using FlightBooking.Application.Interfaces.Services;
 using FlightBooking.Application.Strategies.Pricing;
@@ -107,6 +107,59 @@ namespace FlightBooking.Application.Services
             return reservation;
         }
 
+
+        /// <summary>
+        /// Wrapper që ekzekuton CreateReservationAsync dhe kthen OperationResult për të shmangur exceptions
+        /// Kjo ruan metoden origjinale për backward compatibility
+        /// </summary>
+        public async Task<OperationResult<Reservation>> TryCreateReservationAsync(
+            int flightId,
+            int passengerId,
+            SeatClass seatClass)
+        {
+            try
+            {
+                var reservation = await CreateReservationAsync(flightId, passengerId, seatClass);
+                return OperationResult<Reservation>.Success(reservation);
+            }
+            catch (Exception ex)
+            {
+                // këtu mund të logosh (shëno si TODO për të zëvendësuar Console.WriteLine me ILogger në hapin tjetër)
+                return OperationResult<Reservation>.Failure(ex.Message, ex);
+            }
+        }
+
+        /// <summary>
+        /// Wrapper për ConfirmReservationAsync që kthen OperationResult (pa hequr exception-throwing variantin)
+        /// </summary>
+        public async Task<OperationResult> TryConfirmReservationAsync(int reservationId)
+        {
+            try
+            {
+                await ConfirmReservationAsync(reservationId);
+                return OperationResult.Success();
+            }
+            catch (Exception ex)
+            {
+                return OperationResult.Failure(ex.Message, ex);
+            }
+        }
+
+        /// <summary>
+        /// Wrapper për CancelReservationAsync që kthen OperationResult (pa hequr exception-throwing variantin)
+        /// </summary>
+        public async Task<OperationResult> TryCancelReservationAsync(int reservationId)
+        {
+            try
+            {
+                await CancelReservationAsync(reservationId);
+                return OperationResult.Success();
+            }
+            catch (Exception ex)
+            {
+                return OperationResult.Failure(ex.Message, ex);
+            }
+        }
         /// <summary>
         /// Merr rezervimin sipas kodit
         /// </summary>

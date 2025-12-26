@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlightBooking.Domain.Entities;
 
-nusing FlightBooking.Domain.Entities;
+using FlightBooking.Domain.Entities;
 
 namespace FlightBooking.Infrastructure.Data.Seed
 {
