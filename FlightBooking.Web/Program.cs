@@ -6,9 +6,7 @@ using FlightBooking.Application.Strategies.Pricing;
 using FlightBooking.Infrastructure.Data;
 using FlightBooking.Infrastructure.Repositories;
 using FlightBooking.Infrastructure.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +36,6 @@ Console.WriteLine("✅ [Startup] Repositories u regjistruan!");
 
 // ============================================
 // 3. REGJISTRO INFRASTRUCTURE SERVICES
-// (Duhet para Business Services sepse EmailService nevojitet për NotificationService)
 // ============================================
 Console.WriteLine("🔧 [Startup] Duke regjistruar infrastructure services...");
 builder.Services.AddScoped<IEmailService, EmailService>();
@@ -53,70 +50,52 @@ builder.Services.AddScoped<IFlightService, FlightService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 
-// ===== NOTIFICATION SERVICE ME OBSERVER PATTERN =====
-// DESIGN PATTERN: Observer Pattern
-// NotificationService koordinon observers që reagojnë ndaj ngjarjeve të rezervimeve
-// Observers ekzekutohen NË PARALEL për performancë më të mirë
+// NOTIFICATION SERVICE ME OBSERVER PATTERN
 builder.Services.AddScoped<INotificationService>(provider =>
 {
-    // Merr services nga DI
     var emailService = provider.GetRequiredService<IEmailService>();
     var smsService = provider.GetRequiredService<ISmsService>();
     var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
 
-    // Krijo observers që implementojnë INotificationObserver
-    // DESIGN PATTERN: Observer Pattern - Multiple observers për të njëjtën ngjarje
     var observers = new List<INotificationObserver>
     {
         new ReservationEmailObserver(emailService, loggerFactory.CreateLogger<ReservationEmailObserver>()),
         new ReservationSmsObserver(smsService, loggerFactory.CreateLogger<ReservationSmsObserver>())
     };
 
-    // Kthen NotificationService me observers të inicializuara
     return new NotificationService(emailService, observers, loggerFactory.CreateLogger<NotificationService>());
 });
-Console.WriteLine("✅ [Startup] NotificationService u regjistrua me 2 observers (Email + SMS)!");
+Console.WriteLine("✅ [Startup] NotificationService u regjistrua me 2 observers!");
 
 // ============================================
-// 5. REGJISTRO STRATEGY PATTERN
-// Duke zgjedhur cilën strategji të përdorim për llogaritjen e çmimeve
+// 5. REGJISTRO STRATEGY PATTERN (Pricing)
 // ============================================
 Console.WriteLine("🔧 [Startup] Duke regjistruar Pricing Strategy...");
 
-// ⚠️ ZGJEDH NJË NGA KËTO TRI STRATEGJI:
+// ZGJEDH STRATEGJINË (mund të bëhet edhe nga configuration)
+var pricingStrategyConfig = builder.Configuration.GetValue<string>("PricingStrategy") ?? "Standard";
 
-// OPSIONI 1: Standard Pricing (çmimet normale)
-builder.Services.AddScoped<IPricingStrategy, StandardPricingStrategy>();
-Console.WriteLine("✅ [Startup] StandardPricingStrategy u aktivizua!");
-
-// OPSIONI 2: Discount Pricing (10% zbritje) - Komento opsionin 1 dhe aktivizo këtë
-// builder.Services.AddScoped<IPricingStrategy, DiscountPricingStrategy>();
-// Console.WriteLine("✅ [Startup] DiscountPricingStrategy u aktivizua (10% OFF)!");
-
-// OPSIONI 3: Seasonal Pricing (çmime sipas sezonit) - Komento opsionin 1 dhe aktivizo këtë
-// builder.Services.AddScoped<IPricingStrategy, SeasonalPricingStrategy>();
-// Console.WriteLine("✅ [Startup] SeasonalPricingStrategy u aktivizua!");
-
-// 📝 DEMONSTRIM: Ndryshimi i strategjisë është SHUMË I THJESHTË!
-// Thjesht komento një rresht dhe aktivizo tjetrin. Gjithçka tjetër mbetet e njëjtë!
-// Kjo është fuqia e Strategy Pattern!
+switch (pricingStrategyConfig.ToLower())
+{
+    case "discount":
+        builder.Services.AddScoped<IPricingStrategy, DiscountPricingStrategy>();
+        Console.WriteLine("✅ [Startup] DiscountPricingStrategy u aktivizua (10% OFF)!");
+        break;
+    case "seasonal":
+        builder.Services.AddScoped<IPricingStrategy, SeasonalPricingStrategy>();
+        Console.WriteLine("✅ [Startup] SeasonalPricingStrategy u aktivizua!");
+        break;
+    default:
+        builder.Services.AddScoped<IPricingStrategy, StandardPricingStrategy>();
+        Console.WriteLine("✅ [Startup] StandardPricingStrategy u aktivizua!");
+        break;
+}
 
 Console.WriteLine("✅ [Startup] Business services u regjistruan!");
 
 // ============================================
 // 6. REGJISTRO MVC CONTROLLERS & VIEWS
 // ============================================
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Account/Login";
-        options.AccessDeniedPath = "/Account/AccessDenied";
-    });
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-});
 Console.WriteLine("🔧 [Startup] Duke regjistruar MVC...");
 builder.Services.AddControllersWithViews();
 Console.WriteLine("✅ [Startup] MVC u konfigurua!");
@@ -127,9 +106,9 @@ Console.WriteLine("✅ [Startup] MVC u konfigurua!");
 var app = builder.Build();
 
 // ============================================
-// 7. KRIJO BAZËN E TË DHËNAVE (nëse nuk ekziston)
+// 7. INICIALIZO BAZËN E TË DHËNAVE
 // ============================================
-Console.WriteLine("\n🔧 [Database] Duke kontrolluar bazën e të dhënave...");
+Console.WriteLine("\n🔧 [Database] Duke inicializuar bazën e të dhënave...");
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -137,17 +116,18 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
 
-        // Krijo bazën nëse nuk ekziston
-        Console.WriteLine("🔧 [Database] Duke krijuar bazën (EnsureCreated)...");
-        context.Database.EnsureCreated();
+        // PËRDOR MIGRATIONS (jo EnsureCreated)
+        Console.WriteLine("🔧 [Database] Duke aplikuar migrations...");
+        context.Database.Migrate();
 
         Console.WriteLine("✅ [Database] Baza e të dhënave është gati!");
         Console.WriteLine($"📊 [Database] Connection: {context.Database.GetConnectionString()}");
     }
     catch (Exception ex)
     {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "❌ [Database] ERROR gjatë inicializimit të bazës!");
         Console.WriteLine($"❌ [Database] ERROR: {ex.Message}");
-        Console.WriteLine($"📄 [Database] StackTrace: {ex.StackTrace}");
     }
 }
 
@@ -161,19 +141,14 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
-    // Në development mode, shfaq exceptions të detajuara
     app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-app.UseAuthentication();
 app.UseAuthorization();
 
-
-// Default route: Home/Index
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -185,24 +160,22 @@ Console.WriteLine("\n============================================");
 Console.WriteLine("✅ FLIGHT BOOKING SYSTEM - GATI!");
 Console.WriteLine("============================================");
 Console.WriteLine("📦 Architecture: Onion Architecture");
-Console.WriteLine("    ├── Domain Layer (Entities + Enums)");
+Console.WriteLine("    ├── Domain Layer (Entities + Enums + Value Objects)");
 Console.WriteLine("    ├── Application Layer (Services + DTOs + Patterns)");
 Console.WriteLine("    ├── Infrastructure Layer (DbContext + Repositories)");
 Console.WriteLine("    └── Presentation Layer (MVC Controllers + Views)");
 Console.WriteLine("");
 Console.WriteLine("🎯 Design Patterns:");
-Console.WriteLine("    ├── MVC Pattern (Controllers + Views + Models)");
-Console.WriteLine("    ├── Repository Pattern (Data Access Abstraction)");
-Console.WriteLine("    ├── Strategy Pattern (Dynamic Pricing: Standard/Discount/Seasonal)");
-Console.WriteLine("    ├── Observer Pattern (Parallel Notifications: Email + SMS)");
-Console.WriteLine("    └── Dependency Injection (DI Container)");
+Console.WriteLine("    ├── MVC Pattern");
+Console.WriteLine("    ├── Repository Pattern");
+Console.WriteLine($"    ├── Strategy Pattern (Active: {pricingStrategyConfig})");
+Console.WriteLine("    ├── Observer Pattern (Email + SMS)");
+Console.WriteLine("    └── Dependency Injection");
 Console.WriteLine("");
-Console.WriteLine("💾 Database: SQL Server LocalDB");
-Console.WriteLine("🔧 DI: Microsoft.Extensions.DependencyInjection");
+Console.WriteLine("💾 Database: SQL Server with Migrations");
 Console.WriteLine("🌐 Framework: ASP.NET Core 8.0 MVC");
 Console.WriteLine("============================================");
 Console.WriteLine("🚀 Aplikacioni po fillon...");
-Console.WriteLine("🌍 URL: https://localhost:XXXX");
 Console.WriteLine("============================================\n");
 
 app.Run();
