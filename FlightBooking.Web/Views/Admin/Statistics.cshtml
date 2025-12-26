@@ -1,6 +1,225 @@
-﻿namespace FlightBooking.Web.Views.Admin
-{
-    public class Statistics
-    {
-    }
+﻿@{
+    ViewData["Title"] = "Admin Dashboard - Statistics";
+    var stats = ViewBag.Statistics;
 }
+
+<div class="mb-4">
+    <h2 class="fw-bold">
+        <i class="bi bi-graph-up text-primary me-2"></i>
+        Admin Dashboard - Statistics
+    </h2>
+    <p class="text-muted">System overview and performance metrics</p>
+</div>
+
+<!-- Summary Cards Row -->
+<div class="row mb-4">
+    <!-- Total Flights -->
+    <div class="col-md-3 mb-3">
+        <div class="modern-card text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <i class="bi bi-airplane-engines" style="font-size: 3rem;"></i>
+            <h3 class="fw-bold mt-3 mb-0">@stats.TotalFlights</h3>
+            <p class="mb-0 opacity-90">Total Flights</p>
+        </div>
+    </div>
+
+    <!-- Total Reservations -->
+    <div class="col-md-3 mb-3">
+        <div class="modern-card text-center" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+            <i class="bi bi-calendar-check" style="font-size: 3rem;"></i>
+            <h3 class="fw-bold mt-3 mb-0">@stats.TotalReservations</h3>
+            <p class="mb-0 opacity-90">Total Reservations</p>
+        </div>
+    </div>
+
+    <!-- Total Passengers -->
+    <div class="col-md-3 mb-3">
+        <div class="modern-card text-center" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+            <i class="bi bi-people" style="font-size: 3rem;"></i>
+            <h3 class="fw-bold mt-3 mb-0">@stats.TotalPassengers</h3>
+            <p class="mb-0 opacity-90">Total Passengers</p>
+        </div>
+    </div>
+
+    <!-- Total Revenue -->
+    <div class="col-md-3 mb-3">
+        <div class="modern-card text-center" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+            <i class="bi bi-currency-dollar" style="font-size: 3rem;"></i>
+            <h3 class="fw-bold mt-3 mb-0">€@stats.TotalRevenue.ToString("F2")</h3>
+            <p class="mb-0 opacity-90">Total Revenue</p>
+        </div>
+    </div>
+</div>
+
+<!-- Reservations Status -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="modern-card">
+            <h4 class="fw-bold mb-3">
+                <i class="bi bi-pie-chart text-primary me-2"></i>
+                Reservations by Status
+            </h4>
+            <div class="row text-center">
+                <div class="col-4">
+                    <div class="p-3 rounded" style="background: #fff3cd;">
+                        <h3 class="fw-bold text-warning mb-0">@stats.PendingReservations</h3>
+                        <small class="text-muted">Pending</small>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="p-3 rounded" style="background: #d1e7dd;">
+                        <h3 class="fw-bold text-success mb-0">@stats.ConfirmedReservations</h3>
+                        <small class="text-muted">Confirmed</small>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="p-3 rounded" style="background: #f8d7da;">
+                        <h3 class="fw-bold text-danger mb-0">@stats.CancelledReservations</h3>
+                        <small class="text-muted">Cancelled</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="modern-card">
+            <h4 class="fw-bold mb-3">
+                <i class="bi bi-airplane text-primary me-2"></i>
+                Flights Status
+            </h4>
+            <div class="row text-center">
+                <div class="col-6">
+                    <div class="p-3 rounded" style="background: #cfe2ff;">
+                        <h3 class="fw-bold text-primary mb-0">@stats.ScheduledFlights</h3>
+                        <small class="text-muted">Scheduled</small>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 rounded" style="background: #d1e7dd;">
+                        <h3 class="fw-bold text-success mb-0">@stats.DepartedFlights</h3>
+                        <small class="text-muted">Departed</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Destinations -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="modern-card">
+            <h4 class="fw-bold mb-3">
+                <i class="bi bi-geo-alt text-danger me-2"></i>
+                Top 5 Destinations
+            </h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Airport</th>
+                            <th>Number of Flights</th>
+                            <th>Popularity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int rank = 1;}
+                        @foreach (var dest in stats.TopDestinations)
+                        {
+                            <tr>
+                                <td><strong>@rank</strong></td>
+                                <td>@dest.Airport</td>
+                                <td>@dest.Count flights</td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: @((dest.Count * 100 / stats.TotalFlights))%">
+                                            @((dest.Count * 100 / stats.TotalFlights).ToString("F0"))%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            rank++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Payments -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="modern-card">
+            <h4 class="fw-bold mb-3">
+                <i class="bi bi-credit-card text-success me-2"></i>
+                Recent Payments
+            </h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var payment in stats.RecentPayments)
+                        {
+                            <tr>
+                                <td><code>@payment.TransactionId</code></td>
+                                <td class="fw-bold text-success">€@payment.Amount.ToString("F2")</td>
+                                <td>@payment.PaymentMethod</td>
+                                <td>
+                                    @if (payment.Status == FlightBooking.Domain.Enums.PaymentStatus.Completed)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>Completed
+                                        </span>
+                                    }
+                                    else if (payment.Status == FlightBooking.Domain.Enums.PaymentStatus.Failed)
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle me-1"></i>Failed
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">
+                                            <i class="bi bi-clock me-1"></i>@payment.Status
+                                        </span>
+                                    }
+                                </td>
+                                <td>@payment.PaymentDate.ToString("dd MMM yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="modern-card text-center" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);">
+            <h5 class="fw-bold mb-3">Quick Actions</h5>
+            <div class="d-flex gap-2 justify-content-center">
+                <a asp-action="Flights" class="btn-modern btn-primary-modern">
+                    <i class="bi bi-airplane me-2"></i>
+                    View All Flights
+                </a>
+                <a asp-action="Reservations" class="btn-modern btn-primary-modern">
+                    <i class="bi bi-calendar-check me-2"></i>
+                    View All Reservations
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
