@@ -1,0 +1,252 @@
+# 🚀 SETUP GUIDE - Flight Booking System
+
+## 📋 KËRKESAT E SISTEMIT
+
+Për të ekzekutuar projektin, ju nevojiten:
+
+- **Visual Studio 2022** (Community, Professional ose Enterprise)
+- **.NET SDK 8.0** - [Download](https://dotnet.microsoft.com/download/dotnet/8.0)
+- **SQL Server LocalDB** (vjen me Visual Studio)
+- **Git** (opsionale, për clone) - [Download](https://git-scm.com/)
+
+---
+
+## ⚙️ HAPAT E INSTALIMIT
+
+### HAPI 1: KLONO PROJEKTIN
+
+```bash
+git clone [URL e projektit]
+cd FlightBookingSystem
+```
+
+OSE shkarkoje projektin si ZIP dhe extract-o.
+
+---
+
+### HAPI 2: HAP NË VISUAL STUDIO
+
+1. Hap **Visual Studio 2022**
+2. Kliko **Open a project or solution**
+3. Navigate te folder dhe selekto `FlightBookingSystem.sln`
+4. Prit që NuGet packages të restoring automatically
+
+---
+
+### HAPI 3: KONFIGURO DATABASËN
+
+#### Opsioni A: Përdor Connection String Ekzistuese (REKOMANDUAR)
+
+Projekti tashmë ka një connection string të konfiguruar në `appsettings.json`:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=FlightBookingDb;Trusted_Connection=true;TrustServerCertificate=true;MultipleActiveResultSets=true"
+  }
+}
+```
+
+Kjo do të funksionojë **automatically** nëse keni LocalDB të instaluar.
+
+#### Opsioni B: Ndrysho Connection String (nëse nevojitet)
+
+Nëse dëshironi të përdorni SQL Server tjetër:
+
+1. Hap `FlightBooking.Web/appsettings.json`
+2. Ndrysho `ConnectionStrings:DefaultConnection`
+3. Shembull për SQL Server Express:
+
+```json
+"Server=localhost\\SQLEXPRESS;Database=FlightBookingDb;Trusted_Connection=true;TrustServerCertificate=true"
+```
+
+---
+
+### HAPI 4: APLIKO MIGRATIONS (KRIJO DATABASËN)
+
+Projekti përdor **Migrations** për të krijuar database-in automatikisht.
+
+#### Mënyra 1: Automatike (nga Program.cs)
+
+Thjesht ekzekuto projektin - `Program.cs` do të aplikojë migrations automatikisht:
+
+```csharp
+context.Database.Migrate(); // Ky line në Program.cs
+```
+
+#### Mënyra 2: Manual (nëse preferon)
+
+Hap **Package Manager Console** në Visual Studio dhe ekzekuto:
+
+```powershell
+# Set default project to Infrastructure
+Update-Database
+```
+
+OSE përdor **Developer Command Prompt**:
+
+```bash
+cd FlightBooking.Web
+dotnet ef database update --project ../FlightBooking.Infrastructure
+```
+
+---
+
+### HAPI 5: EKZEKUTO PROJEKTIN
+
+1. Sigurohu që **FlightBooking.Web** është startup project (bold në Solution Explorer)
+2. Kliko **Run** (F5) ose **Debug** → **Start Debugging**
+3. Aplikacioni do të hapet në browser në:
+   - `https://localhost:7035` (HTTPS)
+   - `http://localhost:5228` (HTTP)
+
+---
+
+## ✅ VERIFIKIMI I INSTALIMIT
+
+Nëse gjithçka funksionon saktë, do të shohësh:
+
+1. **Console Output:**
+```
+🔧 [Startup] Duke konfiguruar bazën e të dhënave...
+✅ [Startup] Baza e të dhënave u konfigurua!
+🔧 [Startup] Duke regjistruar repositories...
+✅ [Startup] Repositories u regjistruan!
+...
+✅ FLIGHT BOOKING SYSTEM - GATI!
+```
+
+2. **Browser:**
+   - Home page me search form
+   - Wizard progress bar në krye
+   - System Insights panel në të djathtë (click ikona)
+
+3. **Database:**
+   - Database `FlightBookingDb` e krijuar në LocalDB
+   - Tables: Flights, Passengers, Reservations, Payments, etj.
+   - Seed data: ~5 fluturime për testim
+
+---
+
+## 🧪 TESTIMI I FUNKSIONALITETEVE
+
+### Test 1: Search Flights
+
+1. Hap home page
+2. Fut:
+   - **From:** PRN
+   - **To:** VIE
+   - **Date:** nesër (ose çdo datë në 30 ditët e ardhshme)
+3. Kliko **Search Flights**
+4. Duhet të shfaqen fluturime
+
+### Test 2: Book Flight
+
+1. Nga search results, kliko **Book Now** në një fluturim
+2. Fut të dhënat e pasagjerit
+3. Zgjidh seat class (Economy, Business, etc.)
+4. Fut të dhënat e pagesës:
+   - **Card Number:** `4242424242424242` (për SUCCESS)
+   - **Card Number:** `4242424242424243` (për FAILURE)
+   - CVV: 123
+   - Expiry: 12/25
+5. Kliko **Complete Booking**
+
+### Test 3: View Bookings
+
+1. Kliko **My Bookings** në navbar
+2. Fut email që përdore për booking
+3. Shiko listën e rezervimeve
+
+### Test 4: Admin Panel
+
+1. Kliko **Admin** → **Dashboard**
+2. Shiko statistikat
+3. Navigate te **Manage Flights** dhe **Reservations**
+
+---
+
+## 🐛 TROUBLESHOOTING
+
+### Problem: "Database connection failed"
+
+**Zgjidhja:**
+```bash
+# Verifiko që LocalDB është duke u ekzekutuar
+sqllocaldb info mssqllocaldb
+
+# Nëse nuk ekziston, krijo:
+sqllocaldb create mssqllocaldb
+sqllocaldb start mssqllocaldb
+```
+
+### Problem: "Migration not found"
+
+**Zgjidhja:**
+```bash
+# Re-apliko migrations
+dotnet ef migrations add InitialCreate --project FlightBooking.Infrastructure --startup-project FlightBooking.Web
+dotnet ef database update --project FlightBooking.Infrastructure --startup-project FlightBooking.Web
+```
+
+### Problem: "NuGet packages not restoring"
+
+**Zgjidhja:**
+1. Right-click solution → **Restore NuGet Packages**
+2. OSE nga Package Manager Console:
+```powershell
+Update-Package -reinstall
+```
+
+### Problem: "Port already in use"
+
+**Zgjidhja:**
+Ndrysho port-in në `launchSettings.json`:
+```json
+"applicationUrl": "https://localhost:7036;http://localhost:5229"
+```
+
+---
+
+## 📂 STRUKTURA E PROJEKTIT
+
+```
+FlightBookingSystem/
+├── FlightBooking.Domain/          # Domain Layer (Entities, Enums, Value Objects)
+├── FlightBooking.Application/     # Application Layer (Services, DTOs, Patterns)
+├── FlightBooking.Infrastructure/  # Infrastructure Layer (DbContext, Repositories)
+├── FlightBooking.Web/             # Presentation Layer (MVC Controllers, Views)
+└── FlightBookingSystem.sln        # Solution File
+```
+
+---
+
+## 📧 KONTAKT PËR SUPPORT
+
+Nëse has probleme gjatë instalimit:
+
+1. Kontrollo **Output** window në Visual Studio
+2. Kontrollo **Package Manager Console** për errors
+3. Sigurohu që të gjitha dependencies janë installed
+4. Verify që .NET 8 SDK është installed correctly
+
+---
+
+## 🎓 AKADEMIKE - DEMONSTRIMI
+
+Gjatë prezantimit, trego:
+
+1. **Architecture:** Onion Architecture me 4 layers
+2. **Design Patterns:**
+   - MVC Pattern (Controllers → Services → Repositories)
+   - Repository Pattern (abstraction i data access)
+   - Strategy Pattern (pricing calculations)
+   - Observer Pattern (parallel notifications)
+3. **Refactoring:** Trego ndryshimet nga "bad code" në "clean code"
+4. **Parallel Processing:** Payment dhe notification në paralel
+5. **System Insights Panel:** Real-time view të active patterns
+
+---
+
+**Sukses me projektin! 🚀**

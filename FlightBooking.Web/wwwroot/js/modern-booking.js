@@ -1,14 +1,32 @@
 ﻿// ============================================
 // MODERN FLIGHT BOOKING - JAVASCRIPT
+// Design Patterns Demo & UI Enhancement
 // ============================================
 
-// System Insights Toggle
+// ============================================
+// SYSTEM INSIGHTS PANEL
+// ============================================
+
+/**
+ * Toggle System Insights Panel
+ */
 function toggleInsights() {
     const panel = document.getElementById('systemInsights');
-    panel.classList.toggle('collapsed');
+    if (panel) {
+        panel.classList.toggle('collapsed');
+
+        // Update badge visibility
+        const badge = document.getElementById('insightsBadge');
+        if (badge) {
+            badge.style.display = panel.classList.contains('collapsed') ? 'flex' : 'none';
+        }
+    }
 }
 
-// Update System Insights
+/**
+ * Update System Insights with current page data
+ * @param {Object} data - Contains services and patterns arrays
+ */
 function updateInsights(data) {
     // Update Active Services
     const servicesContainer = document.getElementById('activeServices');
@@ -41,9 +59,33 @@ function updateInsights(data) {
             </div>
         `).join('');
     }
+
+    // Update counts
+    const patternCount = document.getElementById('patternCount');
+    const serviceCount = document.getElementById('serviceCount');
+    const badge = document.getElementById('insightsBadge');
+
+    if (patternCount && data.patterns) {
+        patternCount.textContent = data.patterns.length;
+    }
+    if (serviceCount && data.services) {
+        serviceCount.textContent = data.services.length;
+    }
+    if (badge && data.patterns && data.services) {
+        badge.textContent = data.patterns.length + data.services.length;
+    }
 }
 
-// Show Notification (Observer Pattern Demo)
+// ============================================
+// OBSERVER PATTERN - NOTIFICATIONS
+// ============================================
+
+/**
+ * Show notification (Observer Pattern Demo)
+ * @param {string} type - 'email' or 'sms'
+ * @param {string} title - Notification title
+ * @param {string} message - Notification message
+ */
 function showNotification(type, title, message) {
     const panel = document.getElementById('notificationPanel');
     if (!panel) return;
@@ -58,6 +100,9 @@ function showNotification(type, title, message) {
             <div class="notification-title">${title}</div>
             <div class="notification-message">${message}</div>
         </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">
+            <i class="bi bi-x-lg"></i>
+        </button>
     `;
 
     panel.appendChild(notification);
@@ -69,8 +114,54 @@ function showNotification(type, title, message) {
     }, 5000);
 }
 
-// Show Loading Overlay
-function showLoading(message = 'Duke procesuar...') {
+/**
+ * Demo Observer Pattern with parallel notifications
+ * @param {string} reservationCode - Reservation code
+ */
+function demoObserverPattern(reservationCode) {
+    console.log('[Observer Pattern] Starting parallel notifications...');
+
+    // Simulate Email Notification (Task 1)
+    setTimeout(() => {
+        showNotification(
+            'email',
+            'Email Sent Successfully',
+            `Confirmation email sent for reservation ${reservationCode}`
+        );
+        console.log('[Observer Pattern] Email notification completed');
+    }, 500);
+
+    // Simulate SMS Notification (Task 2 - parallel with Email)
+    setTimeout(() => {
+        showNotification(
+            'sms',
+            'SMS Sent Successfully',
+            `Confirmation SMS sent for reservation ${reservationCode}`
+        );
+        console.log('[Observer Pattern] SMS notification completed');
+    }, 1000);
+
+    // Update insights
+    setTimeout(() => {
+        updateInsights({
+            services: ['NotificationService', 'EmailService', 'SmsService'],
+            patterns: ['Observer Pattern', 'Parallel Processing']
+        });
+    }, 1500);
+}
+
+// ============================================
+// LOADING STATES
+// ============================================
+
+/**
+ * Show loading overlay
+ * @param {string} message - Loading message
+ */
+function showLoading(message = 'Processing...') {
+    // Remove existing overlay if any
+    hideLoading();
+
     const overlay = document.createElement('div');
     overlay.id = 'loadingOverlay';
     overlay.className = 'loading-overlay';
@@ -83,7 +174,9 @@ function showLoading(message = 'Duke procesuar...') {
     document.body.appendChild(overlay);
 }
 
-// Hide Loading Overlay
+/**
+ * Hide loading overlay
+ */
 function hideLoading() {
     const overlay = document.getElementById('loadingOverlay');
     if (overlay) {
@@ -92,7 +185,14 @@ function hideLoading() {
     }
 }
 
-// Flight Card Selection
+// ============================================
+// FLIGHT SELECTION
+// ============================================
+
+/**
+ * Select a flight card
+ * @param {number} flightId - Flight ID
+ */
 function selectFlight(flightId) {
     // Remove previous selection
     document.querySelectorAll('.flight-card').forEach(card => {
@@ -105,7 +205,7 @@ function selectFlight(flightId) {
         selectedCard.classList.add('selected');
     }
 
-    // Update hidden input
+    // Update hidden input if exists
     const hiddenInput = document.getElementById('selectedFlightId');
     if (hiddenInput) {
         hiddenInput.value = flightId;
@@ -118,7 +218,14 @@ function selectFlight(flightId) {
     });
 }
 
-// Strategy Pattern Selector
+// ============================================
+// STRATEGY PATTERN - PRICING
+// ============================================
+
+/**
+ * Select pricing strategy (Strategy Pattern Demo)
+ * @param {string} strategy - Strategy name ('Standard', 'Discount', 'Seasonal')
+ */
 function selectStrategy(strategy) {
     // Remove previous selection
     document.querySelectorAll('.strategy-option').forEach(option => {
@@ -131,7 +238,7 @@ function selectStrategy(strategy) {
         selectedOption.classList.add('active');
     }
 
-    // Update hidden input
+    // Update hidden input if exists
     const hiddenInput = document.getElementById('selectedStrategy');
     if (hiddenInput) {
         hiddenInput.value = strategy;
@@ -153,14 +260,17 @@ function selectStrategy(strategy) {
     showNotification(
         'email',
         'Pricing Strategy Changed',
-        `Pricing strategy switched to: ${strategyNames[strategy]}`
+        `Switched to: ${strategyNames[strategy]}`
     );
 
-    // Recalculate prices (if applicable)
+    // Recalculate prices
     recalculatePrices(strategy);
 }
 
-// Recalculate Prices Based on Strategy
+/**
+ * Recalculate prices based on selected strategy
+ * @param {string} strategy - Strategy name
+ */
 function recalculatePrices(strategy) {
     const basePriceElements = document.querySelectorAll('[data-base-price]');
 
@@ -188,7 +298,68 @@ function recalculatePrices(strategy) {
     });
 }
 
-// Form Validation Enhancement
+// ============================================
+// WIZARD NAVIGATION
+// ============================================
+
+/**
+ * Navigate wizard progress bar
+ * @param {string} step - Current step ('search', 'flights', 'passengers', 'payment', 'confirmation')
+ */
+function navigateWizard(step) {
+    const steps = ['search', 'flights', 'passengers', 'payment', 'confirmation'];
+    const currentIndex = steps.indexOf(step);
+
+    if (currentIndex === -1) return;
+
+    // Update progress bar
+    document.querySelectorAll('.progress-step').forEach((stepEl, index) => {
+        stepEl.classList.remove('active', 'completed');
+        if (index < currentIndex) {
+            stepEl.classList.add('completed');
+        } else if (index === currentIndex) {
+            stepEl.classList.add('active');
+        }
+    });
+
+    // Update insights based on current step
+    const stepInsights = {
+        'search': {
+            services: ['FlightService'],
+            patterns: ['Repository Pattern', 'MVC Pattern']
+        },
+        'flights': {
+            services: ['FlightService', 'PricingStrategy'],
+            patterns: ['Strategy Pattern', 'Repository Pattern']
+        },
+        'passengers': {
+            services: ['PassengerRepository', 'ValidationService'],
+            patterns: ['DTO Pattern', 'Validation']
+        },
+        'payment': {
+            services: ['PaymentService', 'ReservationService', 'NotificationService'],
+            patterns: ['Strategy Pattern', 'Observer Pattern']
+        },
+        'confirmation': {
+            services: ['NotificationService', 'EmailService', 'SmsService'],
+            patterns: ['Observer Pattern', 'Parallel Processing']
+        }
+    };
+
+    if (stepInsights[step]) {
+        updateInsights(stepInsights[step]);
+    }
+}
+
+// ============================================
+// FORM VALIDATION
+// ============================================
+
+/**
+ * Validate form before submission
+ * @param {string} formId - Form ID
+ * @returns {boolean} - Is form valid
+ */
 function validateForm(formId) {
     const form = document.getElementById(formId);
     if (!form) return true;
@@ -197,9 +368,18 @@ function validateForm(formId) {
     let isValid = true;
 
     inputs.forEach(input => {
-        if (!input.value) {
+        if (!input.value || (input.type === 'email' && !isValidEmail(input.value))) {
             isValid = false;
             input.classList.add('is-invalid');
+
+            // Show error message
+            let errorMsg = input.parentElement.querySelector('.invalid-feedback');
+            if (!errorMsg) {
+                errorMsg = document.createElement('div');
+                errorMsg.className = 'invalid-feedback';
+                errorMsg.textContent = 'This field is required';
+                input.parentElement.appendChild(errorMsg);
+            }
         } else {
             input.classList.remove('is-invalid');
         }
@@ -208,7 +388,24 @@ function validateForm(formId) {
     return isValid;
 }
 
-// Smooth Scroll to Element
+/**
+ * Validate email address
+ * @param {string} email - Email address
+ * @returns {boolean} - Is email valid
+ */
+function isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+// ============================================
+// SMOOTH SCROLL
+// ============================================
+
+/**
+ * Smooth scroll to element
+ * @param {string} elementId - Element ID
+ */
 function scrollToElement(elementId) {
     const element = document.getElementById(elementId);
     if (element) {
@@ -216,8 +413,46 @@ function scrollToElement(elementId) {
     }
 }
 
-// Initialize on Page Load
+// ============================================
+// PAYMENT PROCESSING SIMULATION
+// ============================================
+
+/**
+ * Process payment (Demo - shows parallel processing)
+ * @param {Object} formData - Payment form data
+ */
+function processPayment(formData) {
+    showLoading('Processing payment...');
+
+    // Update insights
+    updateInsights({
+        services: ['PaymentService', 'ReservationService', 'NotificationService'],
+        patterns: ['Strategy Pattern', 'Observer Pattern', 'Parallel Processing']
+    });
+
+    // Simulate payment processing (2 seconds)
+    setTimeout(() => {
+        hideLoading();
+
+        // Show parallel processing notification
+        showNotification(
+            'email',
+            'Payment Processing',
+            'Payment and notification processing started in parallel...'
+        );
+    }, 2000);
+}
+
+// ============================================
+// INITIALIZATION
+// ============================================
+
+/**
+ * Initialize page when DOM is ready
+ */
 document.addEventListener('DOMContentLoaded', function () {
+    console.log('[Flight Booking System] Initialized');
+
     // Initialize insights with default data
     updateInsights({
         services: ['FlightService'],
@@ -230,7 +465,10 @@ document.addEventListener('DOMContentLoaded', function () {
         form.addEventListener('submit', function (e) {
             if (!validateForm(form.id)) {
                 e.preventDefault();
-                scrollToElement(form.querySelector('.is-invalid').id);
+                const firstInvalid = form.querySelector('.is-invalid');
+                if (firstInvalid) {
+                    scrollToElement(firstInvalid.id);
+                }
             }
         });
     });
@@ -240,101 +478,37 @@ document.addEventListener('DOMContentLoaded', function () {
     if (defaultStrategy) {
         defaultStrategy.classList.add('active');
     }
+
+    // Add notification close button style
+    addNotificationStyles();
 });
 
-// Observer Pattern Demo - Simulate Notifications
-function demoObserverPattern(reservationCode) {
-    // Simulate Email Notification
-    setTimeout(() => {
-        showNotification(
-            'email',
-            'Email Sent Successfully',
-            `Confirmation email sent for reservation ${reservationCode}`
-        );
-    }, 500);
-
-    // Simulate SMS Notification
-    setTimeout(() => {
-        showNotification(
-            'sms',
-            'SMS Sent Successfully',
-            `Confirmation SMS sent for reservation ${reservationCode}`
-        );
-    }, 1000);
-
-    // Update insights
-    updateInsights({
-        services: ['NotificationService', 'EmailService'],
-        patterns: ['Observer Pattern', 'Parallel Processing']
-    });
-}
-
-// Payment Processing Simulation
-function processPayment(formData) {
-    showLoading('Duke procesuar pagesën...');
-
-    // Update insights
-    updateInsights({
-        services: ['PaymentService', 'ReservationService', 'NotificationService'],
-        patterns: ['Strategy Pattern', 'Observer Pattern', 'Parallel Processing']
-    });
-
-    // Simulate payment processing (2 seconds)
-    setTimeout(() => {
-        hideLoading();
-
-        // Simulate parallel processing notification
-        showNotification(
-            'email',
-            'Payment Processing',
-            'Payment and notification processing started in parallel...'
-        );
-    }, 2000);
-}
-
-// Wizard Navigation
-function navigateWizard(step) {
-    const steps = ['search', 'passengers', 'flights', 'payment', 'confirmation'];
-    const currentIndex = steps.indexOf(step);
-
-    // Update progress bar
-    document.querySelectorAll('.progress-step').forEach((stepEl, index) => {
-        if (index < currentIndex) {
-            stepEl.classList.add('completed');
-            stepEl.classList.remove('active');
-        } else if (index === currentIndex) {
-            stepEl.classList.add('active');
-            stepEl.classList.remove('completed');
-        } else {
-            stepEl.classList.remove('active', 'completed');
+/**
+ * Add notification close button styles
+ */
+function addNotificationStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .notification-close {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.5rem;
+            margin-left: auto;
         }
-    });
-
-    // Update insights based on current step
-    const stepInsights = {
-        'search': {
-            services: ['FlightService'],
-            patterns: ['Repository Pattern', 'MVC Pattern']
-        },
-        'passengers': {
-            services: ['PassengerRepository'],
-            patterns: ['DTO Pattern', 'Validation']
-        },
-        'flights': {
-            services: ['FlightService', 'ReservationService'],
-            patterns: ['Strategy Pattern', 'Repository Pattern']
-        },
-        'payment': {
-            services: ['PaymentService', 'ReservationService'],
-            patterns: ['Strategy Pattern', 'Observer Pattern']
-        },
-        'confirmation': {
-            services: ['NotificationService', 'EmailService'],
-            patterns: ['Observer Pattern', 'DTO Pattern']
+        .notification-close:hover {
+            color: #ef4444;
         }
-    };
-
-    if (stepInsights[step]) {
-        updateInsights(stepInsights[step]);
-    }
+    `;
+    document.head.appendChild(style);
 }
+
+// ============================================
+// CONSOLE WELCOME MESSAGE
+// ============================================
+
+console.log('%c🛫 Flight Booking System', 'color: #2563eb; font-size: 24px; font-weight: bold;');
+console.log('%c🎯 Design Patterns: MVC, Repository, Strategy, Observer', 'color: #7c3aed; font-size: 14px;');
+console.log('%c🏗️ Architecture: Onion/Clean Architecture', 'color: #10b981; font-size: 14px;');
+console.log('%c📚 Academic Project - Design Patterns & Refactoring', 'color: #f59e0b; font-size: 14px;');

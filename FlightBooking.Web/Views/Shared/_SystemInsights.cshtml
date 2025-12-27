@@ -1,17 +1,33 @@
-﻿<div id="systemInsights" class="system-insights collapsed">
-    <button class="insights-toggle" onclick="toggleInsights()">
+﻿<!-- ============================================
+     SYSTEM INSIGHTS PANEL
+     DESIGN PATTERN DEMONSTRATION
+     ============================================ -->
+<div id="systemInsights" class="system-insights collapsed">
+    <!-- Toggle Button -->
+    <button class="insights-toggle" onclick="toggleInsights()" title="Toggle System Insights">
         <i class="bi bi-code-slash"></i>
+        <span class="insights-badge" id="insightsBadge">4</span>
     </button>
 
+    <!-- Insights Content -->
     <div class="insights-content">
-        <h4 class="fw-bold mb-4">
-            <i class="bi bi-gear-fill text-primary me-2"></i>
-            System Insights
-        </h4>
+        <!-- Header -->
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h4 class="fw-bold mb-0">
+                <i class="bi bi-gear-fill text-primary me-2"></i>
+                System Insights
+            </h4>
+            <button class="btn btn-sm btn-light" onclick="toggleInsights()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
 
-        <!-- Current Layer -->
+        <!-- Current Page Info -->
         <div class="insight-section">
-            <div class="insight-title">Current Layer</div>
+            <div class="insight-title">
+                <i class="bi bi-file-earmark-code me-2"></i>
+                Current Page
+            </div>
             <div class="insight-item">
                 <div class="insight-icon layer-presentation">
                     <i class="bi bi-eye-fill"></i>
@@ -25,30 +41,142 @@
 
         <!-- Active Services -->
         <div class="insight-section">
-            <div class="insight-title">Active Services</div>
+            <div class="insight-title">
+                <i class="bi bi-gear-wide-connected me-2"></i>
+                Active Services
+            </div>
             <div id="activeServices">
-                <!-- Dynamically populated -->
+                <!-- Dynamically populated by JavaScript -->
+                <div class="insight-item">
+                    <div class="insight-icon layer-application">
+                        <i class="bi bi-gear"></i>
+                    </div>
+                    <div class="insight-text">
+                        <div class="insight-label">Service</div>
+                        <div class="insight-value">FlightService</div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Design Patterns -->
         <div class="insight-section">
-            <div class="insight-title">Design Patterns</div>
+            <div class="insight-title">
+                <i class="bi bi-puzzle me-2"></i>
+                Active Patterns
+            </div>
             <div id="activePatterns">
-                <!-- Dynamically populated -->
+                <!-- Dynamically populated by JavaScript -->
+                <div class="insight-item">
+                    <div class="insight-icon" style="background: #fef3c7; color: #f59e0b;">
+                        <i class="bi bi-lightning-fill"></i>
+                    </div>
+                    <div class="insight-text">
+                        <div class="insight-label">Pattern</div>
+                        <div class="insight-value">MVC Pattern</div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Architecture Info -->
         <div class="insight-section">
-            <div class="insight-title">Architecture</div>
-            <div class="small text-muted">
+            <div class="insight-title">
+                <i class="bi bi-diagram-3 me-2"></i>
+                Architecture
+            </div>
+            <div class="p-3 rounded" style="background: var(--light-color); font-family: 'Courier New', monospace; font-size: 0.8rem;">
                 <strong>Onion Architecture</strong><br>
-                ├── Domain (Core)<br>
-                ├── Application (Services)<br>
-                ├── Infrastructure (Data)<br>
-                └── Presentation (UI)
+                <span class="text-muted">└─</span> <strong style="color: #2563eb;">Domain</strong> (Core)<br>
+                <span class="text-muted">&nbsp;&nbsp;&nbsp;└─</span> <strong style="color: #7c3aed;">Application</strong> (Services)<br>
+                <span class="text-muted">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─</span> <strong style="color: #10b981;">Infrastructure</strong> (Data)<br>
+                <span class="text-muted">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─</span> <strong style="color: #f59e0b;">Presentation</strong> (UI)
+            </div>
+        </div>
+
+        <!-- Layer Dependencies -->
+        <div class="insight-section">
+            <div class="insight-title">
+                <i class="bi bi-arrow-down-up me-2"></i>
+                Layer Dependencies
+            </div>
+            <div class="small text-muted">
+                <div class="mb-2">
+                    <i class="bi bi-check-circle text-success me-1"></i>
+                    <strong>Presentation</strong> → Application
+                </div>
+                <div class="mb-2">
+                    <i class="bi bi-check-circle text-success me-1"></i>
+                    <strong>Application</strong> → Domain
+                </div>
+                <div class="mb-2">
+                    <i class="bi bi-check-circle text-success me-1"></i>
+                    <strong>Infrastructure</strong> → Application
+                </div>
+                <div class="mb-2">
+                    <i class="bi bi-x-circle text-danger me-1"></i>
+                    <strong>Domain</strong> → No Dependencies!
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="insight-section border-0">
+            <div class="insight-title">
+                <i class="bi bi-bar-chart me-2"></i>
+                Quick Stats
+            </div>
+            <div class="row g-2 text-center small">
+                <div class="col-6">
+                    <div class="p-2 rounded" style="background: #dbeafe;">
+                        <div class="fw-bold text-primary" id="patternCount">4</div>
+                        <div class="text-muted">Patterns</div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-2 rounded" style="background: #ddd6fe;">
+                        <div class="fw-bold text-secondary" id="serviceCount">5</div>
+                        <div class="text-muted">Services</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Additional CSS for Badge -->
+<style>
+    .insights-toggle {
+        position: relative;
+    }
+
+    .insights-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #ef4444;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: bold;
+    }
+
+    .hover-opacity-100:hover {
+        opacity: 1 !important;
+    }
+
+    /* Smooth transitions */
+    .insight-item {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .insight-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+</style>

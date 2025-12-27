@@ -1,5 +1,4 @@
 ﻿<!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="sq">
 <head>
     <meta charset="utf-8" />
@@ -21,23 +20,83 @@
     <link rel="stylesheet" href="~/css/modern-booking.css" asp-append-version="true" />
 </head>
 <body>
-    <!-- Modern Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(0,0,0,0.3); backdrop-filter: blur(10px);">
+    <!-- ============================================
+         MODERN NAVIGATION BAR
+         ============================================ -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.95) 0%, rgba(124, 58, 237, 0.95) 100%); backdrop-filter: blur(10px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
         <div class="container-fluid">
+            <!-- Brand -->
             <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
                 <i class="bi bi-airplane-fill me-2" style="font-size: 1.5rem;"></i>
-                <span class="fw-bold">Flight Booking System</span>
+                <span class="fw-bold">Flight Booking</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+            <!-- Toggler for Mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
+            <!-- Navigation Links -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <!-- Home -->
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-house-fill me-1"></i> Home
+                        </a>
+                    </li>
+
+                    <!-- Search Flights -->
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Flight" asp-action="Search">
                             <i class="bi bi-search me-1"></i> Search Flights
                         </a>
                     </li>
+
+                    <!-- My Bookings -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="bookingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-ticket-perforated me-1"></i> My Bookings
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="bookingsDropdown">
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="showEmailPrompt(); return false;">
+                                    <i class="bi bi-list-ul me-2"></i> View My Bookings
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="showProfilePrompt(); return false;">
+                                    <i class="bi bi-person-circle me-2"></i> My Profile
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Admin Panel -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear-fill me-1"></i> Admin
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                            <li>
+                                <a class="dropdown-item" asp-controller="Admin" asp-action="Index">
+                                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Admin" asp-action="Flights">
+                                    <i class="bi bi-airplane-engines me-2"></i> Manage Flights
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Admin" asp-action="Reservations">
+                                    <i class="bi bi-journal-check me-2"></i> Reservations
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- About -->
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="Home" asp-action="About">
                             <i class="bi bi-info-circle me-1"></i> About
@@ -48,22 +107,129 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- ============================================
+         MAIN CONTENT AREA
+         ============================================ -->
     <div class="container my-4">
         <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <!-- System Insights Panel (Hidden initially) -->
+    <!-- ============================================
+         SYSTEM INSIGHTS PANEL (Design Patterns Demo)
+         ============================================ -->
     @await Html.PartialAsync("_SystemInsights")
 
-    <!-- Notification Panel (For Observer Pattern Demo) -->
+    <!-- ============================================
+         NOTIFICATION PANEL (Observer Pattern Demo)
+         ============================================ -->
     <div id="notificationPanel" class="notification-panel"></div>
 
-    <!-- Scripts -->
+    <!-- ============================================
+         FOOTER
+         ============================================ -->
+    <footer class="mt-5" style="background: linear-gradient(135deg, #1f2937 0%, #111827 100%); color: white; padding: 3rem 0;">
+        <div class="container">
+            <div class="row">
+                <!-- About Section -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-airplane-fill me-2"></i>
+                        Flight Booking System
+                    </h5>
+                    <p class="small opacity-75">
+                        An academic project demonstrating design patterns and clean architecture principles.
+                        Built with ASP.NET Core MVC and Onion Architecture.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a asp-controller="Home" asp-action="Index" class="text-white text-decoration-none opacity-75 hover-opacity-100">
+                                <i class="bi bi-house me-2"></i>Home
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a asp-controller="Flight" asp-action="Search" class="text-white text-decoration-none opacity-75 hover-opacity-100">
+                                <i class="bi bi-search me-2"></i>Search Flights
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a asp-controller="Home" asp-action="About" class="text-white text-decoration-none opacity-75 hover-opacity-100">
+                                <i class="bi bi-info-circle me-2"></i>About Project
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a asp-controller="Home" asp-action="Privacy" class="text-white text-decoration-none opacity-75 hover-opacity-100">
+                                <i class="bi bi-shield-check me-2"></i>Privacy
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Design Patterns -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3">Design Patterns</h5>
+                    <div class="small">
+                        <div class="mb-2">
+                            <i class="bi bi-check-circle text-success me-2"></i>
+                            MVC Pattern
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-check-circle text-success me-2"></i>
+                            Repository Pattern
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-check-circle text-success me-2"></i>
+                            Strategy Pattern
+                        </div>
+                        <div class="mb-2">
+                            <i class="bi bi-check-circle text-success me-2"></i>
+                            Observer Pattern
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Copyright -->
+            <hr class="opacity-25 my-4">
+            <div class="text-center small opacity-75">
+                <p class="mb-0">
+                    &copy; @DateTime.Now.Year Flight Booking System - Academic Project
+                    <br>
+                    Built with <i class="bi bi-heart-fill text-danger"></i> using ASP.NET Core MVC
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================
+         JAVASCRIPT LIBRARIES
+         ============================================ -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/modern-booking.js" asp-append-version="true"></script>
+
+    <!-- Email Prompt Script -->
+    <script>
+        function showEmailPrompt() {
+            const email = prompt('Enter your email to view your bookings:');
+            if (email) {
+                window.location.href = '/Passenger/MyBookings?email=' + encodeURIComponent(email);
+            }
+        }
+
+        function showProfilePrompt() {
+            const email = prompt('Enter your email to view your profile:');
+            if (email) {
+                window.location.href = '/Passenger/Profile?email=' + encodeURIComponent(email);
+            }
+        }
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
