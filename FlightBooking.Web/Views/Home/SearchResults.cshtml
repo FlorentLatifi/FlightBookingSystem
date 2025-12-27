@@ -1,133 +1,196 @@
 ﻿@model IEnumerable<FlightBooking.Application.DTOs.FlightDto>
 
 @{
-    ViewData["Title"] = "Rezultatet e Kërkimit";
-    var searchCriteria = TempData["SearchCriteria"]?.ToString() ?? "Të gjithë fluturimet";
+    ViewData["Title"] = "Search Results";
+    var searchCriteria = TempData["SearchCriteria"]?.ToString() ?? "All flights";
 }
 
+<!-- Wizard Progress Bar -->
+<div class="wizard-progress">
+    <div class="progress-steps">
+        <div class="progress-step completed">
+            <div class="step-icon"><i class="bi bi-check"></i></div>
+            <div class="step-label">Search</div>
+        </div>
+        <div class="progress-step active">
+            <div class="step-icon">2</div>
+            <div class="step-label">Select Flight</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">3</div>
+            <div class="step-label">Passenger Info</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">4</div>
+            <div class="step-label">Payment</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">5</div>
+            <div class="step-label">Confirmation</div>
+        </div>
+    </div>
+</div>
+
+<!-- Back Button -->
 <div class="mb-4">
-    <a asp-action="Index" class="btn btn-secondary">
-        ← Kthehu te kërkimi
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left me-2"></i>
+        Back to Search
     </a>
 </div>
 
-<div class="text-center mb-4">
-    <h2>🔍 Rezultatet e Kërkimit</h2>
+<!-- Hero Section -->
+<div class="modern-card text-center mb-4">
+    <h1 class="display-5 fw-bold">
+        <i class="bi bi-search text-primary me-2"></i>
+        Search Results
+    </h1>
     <p class="lead text-muted">@searchCriteria</p>
 </div>
 
-<!-- DESIGN PATTERN: Strategy Pattern - UI Demo -->
-<div class="card mb-4 shadow-sm">
-    <div class="card-header bg-info text-white">
-        <h5 class="mb-0">💰 Pricing Strategy Demo</h5>
-        <small>DESIGN PATTERN: Strategy Pattern - Ndrysho strategjinë për të parë efektin në çmime</small>
+<!-- Strategy Pattern Demo (Read-Only for now) -->
+<div class="modern-card mb-4" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%); border: 2px dashed var(--primary-color);">
+    <div class="d-flex align-items-center mb-3">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; margin-right: 1rem;">
+            <i class="bi bi-sliders"></i>
+        </div>
+        <div>
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-lightning-fill text-warning me-2"></i>
+                Strategy Pattern Demo
+            </h5>
+            <p class="small text-muted mb-0">Current pricing strategy: <strong>Standard Pricing</strong></p>
+        </div>
     </div>
-    <div class="card-body">
-        <div class="btn-group w-100 mb-3" role="group">
-            <button type="button" class="btn btn-outline-primary active" onclick="applyStrategy('standard', this)">
-                Standard Pricing
-            </button>
-            <button type="button" class="btn btn-outline-success" onclick="applyStrategy('discount', this)">
-                10% Discount
-            </button>
-        </div>
-        <div id="strategyInfo" class="alert alert-info mb-0">
-            <strong>Strategjia aktuale:</strong> <span id="currentStrategy">Standard Pricing</span>
-            <br>
-            <small id="strategyDescription">Standard pricing based on seat class</small>
-        </div>
+
+    <div class="alert alert-info mb-0">
+        <i class="bi bi-info-circle me-2"></i>
+        <small>
+            <strong>Design Pattern:</strong> Prices are calculated using the Strategy Pattern.
+            Different strategies (Standard, Discount, Seasonal) can be configured in <code>Program.cs</code>
+        </small>
     </div>
 </div>
 
 @if (!Model.Any())
 {
+    <!-- No Results -->
     <div class="alert alert-warning text-center" role="alert">
-        <h4 class="alert-heading">😔 Asnjë fluturim i disponueshëm</h4>
-        <p>Nuk u gjetën fluturime për këto kritere kërkimi.</p>
+        <h4 class="alert-heading">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            No Flights Found
+        </h4>
+        <p>No flights available for your search criteria.</p>
         <hr>
-        <p class="mb-0">Ju lutem provoni me data ose destinacione të tjera.</p>
+        <p class="mb-0">Please try different dates or destinations.</p>
     </div>
 }
 else
 {
+    <!-- Results Count -->
     <div class="alert alert-success text-center mb-4" role="alert">
-        ✅ U gjetën <strong>@Model.Count()</strong> fluturime të disponueshme!
+        <i class="bi bi-check-circle me-2"></i>
+        Found <strong>@Model.Count()</strong> available flights
     </div>
 
+    <!-- Flight Cards -->
     <div class="row">
         @foreach (var flight in Model)
         {
             <div class="col-md-6 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-primary text-white">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">✈️ @flight.FlightNumber</h5>
-                            <span class="badge bg-light text-dark">@flight.Airline</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <!-- Route -->
-                        <div class="row mb-3">
-                            <div class="col-5 text-center">
-                                <div class="fw-bold fs-5">@flight.DepartureAirport.Split('-')[0].Trim()</div>
-                                <div class="text-muted small">@flight.DepartureTime.ToString("HH:mm")</div>
-                                <div class="text-muted small">@flight.DepartureTime.ToString("dd MMM yyyy")</div>
-                            </div>
-                            <div class="col-2 text-center">
-                                <div class="text-primary">
-                                    <i class="bi bi-arrow-right"></i>
-                                    <div class="small text-muted">@flight.FormattedDuration</div>
-                                </div>
-                            </div>
-                            <div class="col-5 text-center">
-                                <div class="fw-bold fs-5">@flight.ArrivalAirport.Split('-')[0].Trim()</div>
-                                <div class="text-muted small">@flight.ArrivalTime.ToString("HH:mm")</div>
-                                <div class="text-muted small">@flight.ArrivalTime.ToString("dd MMM yyyy")</div>
+                <div class="flight-card">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-airplane-fill text-primary me-2" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <div class="fw-bold">@flight.Airline</div>
+                                <div class="small text-muted">@flight.FlightNumber</div>
                             </div>
                         </div>
-
-                        <hr>
-
-                        <!-- Details -->
-                        <div class="row text-center mb-3">
-                            <div class="col-6">
-                                <div class="text-muted small">Çmimi fillues</div>
-                                <div class="fw-bold text-success fs-4">€@flight.BasePrice.ToString("F2")</div>
-                            </div>
-                            <div class="col-6">
-                                <div class="text-muted small">Vende të disponueshme</div>
-                                <div class="fw-bold fs-4">@flight.AvailableSeats</div>
-                            </div>
-                        </div>
-
-                        <!-- Status Badge -->
                         @if (flight.IsAvailable)
                         {
-                            <div class="alert alert-success mb-3 py-2 text-center">
-                                ✅ E disponueshme për rezervim
-                            </div>
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Available
+                            </span>
                         }
                         else
                         {
-                            <div class="alert alert-warning mb-3 py-2 text-center">
-                                ⚠️ Nuk është e disponueshme
-                            </div>
+                            <span class="badge bg-warning">
+                                <i class="bi bi-exclamation-triangle me-1"></i>
+                                Limited
+                            </span>
                         }
                     </div>
-                    <div class="card-footer bg-white">
+
+                    <!-- Route -->
+                    <div class="flight-route">
+                        <div class="flight-location">
+                            <div class="flight-location-code">
+                                @{
+                                    var depParts = flight.DepartureAirport.Split('-');
+                                    var depCode = depParts.Length > 0 ? depParts[0].Trim() : "???";
+                                    var depCity = depParts.Length > 1 ? depParts[1].Trim() : "";
+                                }
+                                @depCode
+                            </div>
+                            <div class="flight-location-name">@depCity</div>
+                            <div class="small text-muted">@flight.DepartureTime.ToString("dd MMM yyyy")</div>
+                            <div class="fw-bold text-primary">@flight.DepartureTime.ToString("HH:mm")</div>
+                        </div>
+
+                        <div class="flight-arrow">
+                            <i class="bi bi-arrow-right"></i>
+                            <div class="small text-muted">@flight.FormattedDuration</div>
+                        </div>
+
+                        <div class="flight-location">
+                            <div class="flight-location-code">
+                                @{
+                                    var arrParts = flight.ArrivalAirport.Split('-');
+                                    var arrCode = arrParts.Length > 0 ? arrParts[0].Trim() : "???";
+                                    var arrCity = arrParts.Length > 1 ? arrParts[1].Trim() : "";
+                                }
+                                @arrCode
+                            </div>
+                            <div class="flight-location-name">@arrCity</div>
+                            <div class="small text-muted">@flight.ArrivalTime.ToString("dd MMM yyyy")</div>
+                            <div class="fw-bold text-success">@flight.ArrivalTime.ToString("HH:mm")</div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Details -->
+                    <div class="flight-details">
+                        <div class="flight-detail-item">
+                            <div class="flight-detail-label">Price from</div>
+                            <div class="flight-detail-value flight-price">€@flight.BasePrice.ToString("F2")</div>
+                        </div>
+                        <div class="flight-detail-item">
+                            <div class="flight-detail-label">Available Seats</div>
+                            <div class="flight-detail-value">@flight.AvailableSeats</div>
+                        </div>
+                    </div>
+
+                    <!-- Book Button -->
+                    <div class="mt-3">
                         @if (flight.IsAvailable)
                         {
                             <a asp-controller="Reservation"
                                asp-action="Create"
                                asp-route-flightId="@flight.Id"
-                               class="btn btn-primary w-100">
-                                🎫 Rezervo Tani
+                               class="btn-modern btn-primary-modern w-100">
+                                <i class="bi bi-ticket-perforated me-2"></i>
+                                Book Now
                             </a>
                         }
                         else
                         {
                             <button class="btn btn-secondary w-100" disabled>
-                                Nuk mund të rezervohet
+                                <i class="bi bi-x-circle me-2"></i>
+                                Not Available
                             </button>
                         }
                     </div>
@@ -137,33 +200,15 @@ else
     </div>
 }
 
-<!-- JavaScript për Strategy Pattern Demo -->
-<script>
-    function applyStrategy(strategy, buttonElement) {
-        // Update button states
-        document.querySelectorAll('.btn-group button').forEach(btn => {
-            btn.classList.remove('active');
+@section Scripts {
+    <script>
+        // Initialize wizard
+        navigateWizard('flights');
+
+        // Update insights
+        updateInsights({
+            services: ['FlightService', 'PricingStrategy'],
+            patterns: ['Strategy Pattern', 'Repository Pattern', 'MVC Pattern']
         });
-        buttonElement.classList.add('active');
-
-        // Update strategy info
-        const strategyInfo = {
-            'standard': {
-                name: 'Standard Pricing',
-                description: 'Standard pricing based on seat class'
-            },
-            'discount': {
-                name: 'Discount Pricing (10% OFF)',
-                description: 'Discount pricing with 10% off on all seat classes'
-            }
-        };
-
-        const info = strategyInfo[strategy] || strategyInfo['standard'];
-        document.getElementById('currentStrategy').textContent = info.name;
-        document.getElementById('strategyDescription').textContent = info.description;
-
-        // Në realitet, këtu do të bëhej fetch për të përditësuar çmimet
-        // Për demo, thjesht tregojmë që strategjia u ndryshua
-        console.log(`Strategy changed to: ${strategy}`);
-    }
-</script>
+    </script>
+}

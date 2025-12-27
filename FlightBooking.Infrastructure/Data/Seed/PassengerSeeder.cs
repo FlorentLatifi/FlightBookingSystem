@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using Microsoft.EntityFrameworkCore;
 using FlightBooking.Domain.Entities;
 
 namespace FlightBooking.Infrastructure.Data.Seed
 {
+    /// <summary>
+    /// Seeder për Passenger data (demo purposes)
+    /// OPSIONAL: Mund të mos thirret në ApplicationDbContext
+    /// </summary>
     public static class PassengerSeeder
     {
-        public static Passenger[] GetPassengers()
+        public static void Seed(ModelBuilder modelBuilder)
         {
-            return new[]
-            {
+            modelBuilder.Entity<Passenger>().HasData(
                 new Passenger
                 {
                     Id = 1,
@@ -47,8 +45,7 @@ namespace FlightBooking.Infrastructure.Data.Seed
                     DateOfBirth = new DateTime(1998, 3, 10),
                     Nationality = "Kosovar"
                 }
-            };
+            );
         }
     }
 }
-

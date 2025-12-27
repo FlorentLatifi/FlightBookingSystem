@@ -4,43 +4,114 @@
     ViewData["Title"] = "Search Flights";
 }
 
-<h2>Search Flights</h2>
-
-<form asp-action="Search" method="post">
-    <div>
-        <label>Departure Airport</label><br />
-        <input asp-for="DepartureAirport" />
-        <span asp-validation-for="DepartureAirport"></span>
+<!-- Wizard Progress -->
+<div class="wizard-progress">
+    <div class="progress-steps">
+        <div class="progress-step active">
+            <div class="step-icon">1</div>
+            <div class="step-label">Search</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">2</div>
+            <div class="step-label">Select Flight</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">3</div>
+            <div class="step-label">Passenger Info</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">4</div>
+            <div class="step-label">Payment</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">5</div>
+            <div class="step-label">Confirmation</div>
+        </div>
     </div>
+</div>
 
-    <div>
-        <label>Arrival Airport</label><br />
-        <input asp-for="ArrivalAirport" />
-        <span asp-validation-for="ArrivalAirport"></span>
+<!-- Hero -->
+<div class="modern-card text-center mb-4">
+    <h1 class="display-4 fw-bold">
+        <i class="bi bi-search text-primary me-2"></i>
+        Search Flights
+    </h1>
+    <p class="lead text-muted">Find your perfect flight</p>
+</div>
+
+<!-- Search Form -->
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="modern-card">
+            <form asp-action="Search" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group-modern">
+                            <label asp-for="DepartureAirport" class="form-label-modern">
+                                <i class="bi bi-geo-alt-fill text-primary me-1"></i>
+                                Departure Airport
+                            </label>
+                            <input asp-for="DepartureAirport" class="form-control-modern" placeholder="e.g. PRN - Prishtina" />
+                            <span asp-validation-for="DepartureAirport" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group-modern">
+                            <label asp-for="ArrivalAirport" class="form-label-modern">
+                                <i class="bi bi-geo-fill text-success me-1"></i>
+                                Arrival Airport
+                            </label>
+                            <input asp-for="ArrivalAirport" class="form-control-modern" placeholder="e.g. VIE - Vienna" />
+                            <span asp-validation-for="ArrivalAirport" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group-modern">
+                            <label asp-for="DepartureDate" class="form-label-modern">
+                                <i class="bi bi-calendar-event text-info me-1"></i>
+                                Departure Date
+                            </label>
+                            <input asp-for="DepartureDate" type="date" class="form-control-modern" />
+                            <span asp-validation-for="DepartureDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group-modern">
+                            <label asp-for="NumberOfPassengers" class="form-label-modern">
+                                <i class="bi bi-people-fill text-warning me-1"></i>
+                                Number of Passengers
+                            </label>
+                            <input asp-for="NumberOfPassengers" type="number" min="1" max="10" class="form-control-modern" />
+                            <span asp-validation-for="NumberOfPassengers" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn-modern btn-primary-modern btn-lg-modern">
+                        <i class="bi bi-search me-2"></i>
+                        Search Flights
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
+</div>
 
-    <div>
-        <label>Departure Date</label><br />
-        <input asp-for="DepartureDate" type="date" />
-        <span asp-validation-for="DepartureDate"></span>
-    </div>
-
-    <div>
-        <label>Number of Passengers</label><br />
-        <input asp-for="NumberOfPassengers" type="number" min="1" max="10" />
-    </div>
-
-    <br />
-
-    <button type="submit">Search Flights</button>
-</form>
-
-@if (!ViewData.ModelState.IsValid)
-{
-    <ul>
-        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-        {
-            <li style="color:red">@error.ErrorMessage</li>
-        }
-    </ul>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        navigateWizard('search');
+        updateInsights({
+            services: ['FlightService'],
+            patterns: ['MVC Pattern', 'Repository Pattern']
+        });
+    </script>
 }

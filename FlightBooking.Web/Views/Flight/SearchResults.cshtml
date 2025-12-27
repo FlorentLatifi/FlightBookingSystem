@@ -4,48 +4,121 @@
     ViewData["Title"] = "Search Results";
 }
 
-<h2>Available Flights</h2>
+<!-- Wizard Progress -->
+<div class="wizard-progress">
+    <div class="progress-steps">
+        <div class="progress-step completed">
+            <div class="step-icon"><i class="bi bi-check"></i></div>
+            <div class="step-label">Search</div>
+        </div>
+        <div class="progress-step active">
+            <div class="step-icon">2</div>
+            <div class="step-label">Select Flight</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">3</div>
+            <div class="step-label">Passenger Info</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">4</div>
+            <div class="step-label">Payment</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">5</div>
+            <div class="step-label">Confirmation</div>
+        </div>
+    </div>
+</div>
+
+<!-- Hero -->
+<div class="modern-card text-center mb-4">
+    <h1 class="display-5 fw-bold">
+        <i class="bi bi-airplane text-primary me-2"></i>
+        Available Flights
+    </h1>
+</div>
 
 @if (!Model.Any())
 {
-    <p>No flights found for the selected criteria.</p>
+    <div class="alert alert-warning text-center">
+        <h4><i class="bi bi-exclamation-triangle me-2"></i>No Flights Found</h4>
+        <p>No flights available for the selected criteria.</p>
+    </div>
 }
 else
 {
-    <table border="1" cellpadding="5" cellspacing="0">
-        <thead>
-            <tr>
-                <th>Flight Number</th>
-                <th>Airline</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Departure</th>
-                <th>Arrival</th>
-                <th>Available Seats</th>
-                <th>Price</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var flight in Model)
-            {
-                <tr>
-                    <td>@flight.FlightNumber</td>
-                    <td>@flight.Airline</td>
-                    <td>@flight.DepartureAirport</td>
-                    <td>@flight.ArrivalAirport</td>
-                    <td>@flight.DepartureTime.ToString("dd.MM.yyyy HH:mm")</td>
-                    <td>@flight.ArrivalTime.ToString("dd.MM.yyyy HH:mm")</td>
-                    <td>@flight.AvailableSeats</td>
-                    <td>@flight.BasePriceAmount @flight.BasePriceCurrency</td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@flight.Id">
-                            Details
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="alert alert-success text-center mb-4">
+        <i class="bi bi-check-circle me-2"></i>
+        Found <strong>@Model.Count()</strong> available flights
+    </div>
+
+    <div class="row">
+        @foreach (var flight in Model)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="flight-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-bold">@flight.Airline</div>
+                            <div class="small text-muted">@flight.FlightNumber</div>
+                        </div>
+                        <span class="badge bg-success">Available</span>
+                    </div>
+
+                    <div class="flight-route">
+                        <div class="flight-location">
+                            <div class="flight-location-code">
+                                @flight.DepartureAirport.Split('-')[0].Trim()
+                            </div>
+                            <div class="fw-bold text-primary">
+                                @flight.DepartureTime.ToString("HH:mm")
+                            </div>
+                        </div>
+                        <div class="flight-arrow">
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                        <div class="flight-location">
+                            <div class="flight-location-code">
+                                @flight.ArrivalAirport.Split('-')[0].Trim()
+                            </div>
+                            <div class="fw-bold text-success">
+                                @flight.ArrivalTime.ToString("HH:mm")
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small text-muted">Price from</div>
+                            <div class="h4 mb-0 text-success">
+                                €@flight.BasePriceAmount.ToString("F2")
+                            </div>
+                        </div>
+                        <div>
+                            <a asp-controller="Reservation"
+                               asp-action="Create"
+                               asp-route-flightId="@flight.Id"
+                               class="btn-modern btn-primary-modern">
+                                <i class="bi bi-ticket-perforated me-2"></i>
+                                Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        navigateWizard('flights');
+        updateInsights({
+            services: ['FlightService'],
+            patterns: ['Repository Pattern', 'MVC Pattern']
+        });
+    </script>
 }
 

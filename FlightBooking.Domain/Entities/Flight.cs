@@ -6,40 +6,76 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FlightBooking.Domain.Entities
 {
+    /// <summary>
+    /// Entiteti që përfaqëson një fluturim
+    /// DESIGN PATTERN: Domain-Driven Design
+    /// Përmban business rules dhe validime
+    /// </summary>
     public class Flight
     {
-        public int Id { get; set; } // Public setter for EF Core
+        // =========================
+        // Primary Key
+        // =========================
+        public int Id { get; set; }
+
+        // =========================
+        // Flight Information
+        // =========================
         public string FlightNumber { get; set; } = string.Empty;
-        
-        // Foreign Keys
+
+        // =========================
+        // Foreign Keys - NEW ARCHITECTURE
+        // =========================
         public int DepartureAirportId { get; set; }
         public int ArrivalAirportId { get; set; }
         public int AirlineId { get; set; }
-        
-        // Legacy string properties (për backward compatibility - do të hiqen gradualisht)
+
+        // =========================
+        // Legacy Fields (për backward compatibility)
+        // Gradualisht do të hiqen kur të përditësohen të gjitha views
+        // =========================
         public string Origin { get; set; } = string.Empty;
         public string Destination { get; set; } = string.Empty;
         public string Airline { get; set; } = string.Empty;
         public string DepartureAirport { get; set; } = string.Empty;
         public string ArrivalAirport { get; set; } = string.Empty;
-        
+
+        // =========================
+        // Flight Times
+        // =========================
         public DateTime DepartureTime { get; set; }
         public DateTime ArrivalTime { get; set; }
+
+        // =========================
+        // Pricing
+        // =========================
         public decimal BasePriceAmount { get; set; }
         public string BasePriceCurrency { get; set; } = "USD";
+
+        // =========================
+        // Capacity
+        // =========================
         public int TotalSeats { get; set; }
         public int AvailableSeats { get; set; }
+
+        // =========================
+        // Status
+        // =========================
         public FlightStatus Status { get; set; }
 
-        // Navigation properties (Foreign Keys)
-        public virtual Airport DepartureAirportEntity { get; set; } = null!;
-        public virtual Airport ArrivalAirportEntity { get; set; } = null!;
-        public virtual Airline AirlineEntity { get; set; } = null!;
+        // =========================
+        // Navigation Properties
+        // =========================
+        public virtual Airport? DepartureAirportEntity { get; set; }
+        public virtual Airport? ArrivalAirportEntity { get; set; }
+        public virtual Airline? AirlineEntity { get; set; }
         public virtual ICollection<Seat> Seats { get; set; } = new List<Seat>();
         public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public virtual ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 
-        // Not mapped - computed property
+        // =========================
+        // Computed Properties
+        // =========================
         [NotMapped]
         public Money BasePrice
         {
@@ -51,12 +87,23 @@ namespace FlightBooking.Domain.Entities
             }
         }
 
-        // Parameterless constructor for EF Core
+        [NotMapped]
+        public int DurationMinutes => (int)(ArrivalTime - DepartureTime).TotalMinutes;
+
+        // =========================
+        // Constructors
+        // =========================
+
+        /// <summary>
+        /// Parameterless constructor for EF Core
+        /// </summary>
         public Flight()
         {
         }
 
-        // Constructor for business logic
+        /// <summary>
+        /// Constructor for business logic
+        /// </summary>
         public Flight(
             string flightNumber,
             string origin,
@@ -81,7 +128,13 @@ namespace FlightBooking.Domain.Entities
             Status = FlightStatus.Scheduled;
         }
 
+        // =========================
         // Business Logic
+        // =========================
+
+        /// <summary>
+        /// A mund të rezervohet ky fluturim për numrin e dhënë të ulëseve?
+        /// </summary>
         public bool CanBook(int numberOfSeats)
         {
             return Status == FlightStatus.Scheduled
@@ -89,11 +142,17 @@ namespace FlightBooking.Domain.Entities
                 && DepartureTime > DateTime.UtcNow.AddHours(2);
         }
 
+        /// <summary>
+        /// A mund të rezervohet ky fluturim?
+        /// </summary>
         public bool CanBeBooked()
         {
             return CanBook(1);
         }
 
+        /// <summary>
+        /// Rezervon ulëse në fluturim
+        /// </summary>
         public void ReserveSeat(int count)
         {
             if (!CanBook(count))
@@ -102,6 +161,9 @@ namespace FlightBooking.Domain.Entities
             AvailableSeats -= count;
         }
 
+        /// <summary>
+        /// Çliron ulëse (kur anulohet rezervimi)
+        /// </summary>
         public void ReleaseSeat(int count)
         {
             AvailableSeats += count;
@@ -110,18 +172,25 @@ namespace FlightBooking.Domain.Entities
                 AvailableSeats = TotalSeats;
         }
 
+        /// <summary>
+        /// Anulon fluturimin
+        /// </summary>
         public void CancelFlight()
         {
             Status = FlightStatus.Cancelled;
         }
 
+        /// <summary>
+        /// Merr kohëzgjatjen e fluturimit
+        /// </summary>
         public TimeSpan GetDuration()
         {
             return ArrivalTime - DepartureTime;
         }
 
-        public int DurationMinutes => (int)GetDuration().TotalMinutes;
-
+        /// <summary>
+        /// A është fluturim ndërkombëtar?
+        /// </summary>
         public bool IsInternational()
         {
             return Origin != Destination && GetDuration() > TimeSpan.FromHours(3);

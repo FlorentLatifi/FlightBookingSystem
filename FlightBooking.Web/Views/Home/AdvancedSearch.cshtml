@@ -1,26 +1,101 @@
-﻿@model IEnumerable<FlightBooking.Domain.Entities.Flight>
+﻿@model FlightBooking.Application.DTOs.FlightSearchDto
 
-<h2 class="fw-bold mb-4">
-    <i class="bi bi-search text-primary me-2"></i>
-    Advanced Flight Search
-</h2>
+@{
+    ViewData["Title"] = "Advanced Search";
+}
 
-<form method="get" class="row g-3 mb-4">
-    <div class="col-md-3">
-        <input name="from" class="form-control" placeholder="From">
+<!-- Wizard Progress -->
+<div class="wizard-progress">
+    <div class="progress-steps">
+        <div class="progress-step active">
+            <div class="step-icon">1</div>
+            <div class="step-label">Search</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">2</div>
+            <div class="step-label">Select Flight</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">3</div>
+            <div class="step-label">Passenger Info</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">4</div>
+            <div class="step-label">Payment</div>
+        </div>
+        <div class="progress-step">
+            <div class="step-icon">5</div>
+            <div class="step-label">Confirmation</div>
+        </div>
     </div>
-    <div class="col-md-3">
-        <input name="to" class="form-control" placeholder="To">
-    </div>
-    <div class="col-md-3">
-        <input type="date" name="date" class="form-control">
-    </div>
-    <div class="col-md-3">
-        <button class="btn btn-primary w-100">Search</button>
-    </div>
-</form>
+</div>
 
-@if (Model != null && Model.Any())
-{
-    <partial name="_FlightsTable" model="Model" />
+<div class="modern-card mb-4">
+    <div class="card-header-modern">
+        <h3>
+            <i class="bi bi-search me-2"></i>
+            Advanced Flight Search
+        </h3>
+    </div>
+
+    <form asp-action="Search" method="post">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="form-group-modern">
+                    <label class="form-label-modern">
+                        <i class="bi bi-geo-alt-fill text-primary me-1"></i>
+                        From
+                    </label>
+                    <input asp-for="DepartureAirport" class="form-control-modern" placeholder="e.g. PRN" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group-modern">
+                    <label class="form-label-modern">
+                        <i class="bi bi-geo-fill text-success me-1"></i>
+                        To
+                    </label>
+                    <input asp-for="ArrivalAirport" class="form-control-modern" placeholder="e.g. VIE" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group-modern">
+                    <label class="form-label-modern">
+                        <i class="bi bi-calendar-event text-info me-1"></i>
+                        Date
+                    </label>
+                    <input asp-for="DepartureDate" type="date" class="form-control-modern" />
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group-modern">
+                    <label class="form-label-modern">
+                        <i class="bi bi-people-fill text-warning me-1"></i>
+                        Passengers
+                    </label>
+                    <input asp-for="NumberOfPassengers" type="number" class="form-control-modern" min="1" max="10" />
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn-modern btn-primary-modern">
+                <i class="bi bi-search me-2"></i>
+                Search Flights
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        navigateWizard('search');
+        updateInsights({
+            services: ['FlightService'],
+            patterns: ['MVC Pattern', 'Repository Pattern']
+        });
+    </script>
 }

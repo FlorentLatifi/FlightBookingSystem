@@ -1,6 +1,67 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<!-- Hero Section -->
+<div class="modern-card text-center mb-4" style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white;">
+    <div style="padding: 3rem 0;">
+        <i class="bi bi-shield-check" style="font-size: 4rem;"></i>
+        <h1 class="display-4 fw-bold mt-3">Privacy Policy</h1>
+        <p class="lead">Your privacy is important to us</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="modern-card mb-4">
+            <h3 class="fw-bold mb-3">
+                <i class="bi bi-info-circle text-primary me-2"></i>
+                Demo Application
+            </h3>
+            <p>
+                This is an <strong>academic project</strong> built for educational purposes to demonstrate
+                design patterns and software architecture principles.
+            </p>
+            <div class="alert alert-info">
+                <i class="bi bi-exclamation-circle me-2"></i>
+                <strong>Note:</strong> No real personal data is collected or stored.
+                All payment information is simulated for demonstration purposes only.
+            </div>
+        </div>
+
+        <div class="modern-card mb-4">
+            <h3 class="fw-bold mb-3">
+                <i class="bi bi-database text-success me-2"></i>
+                Data Usage
+            </h3>
+            <p>This demo application:</p>
+            <ul>
+                <li>Stores flight booking data in a local database (LocalDB)</li>
+                <li>Does NOT process real payments</li>
+                <li>Does NOT send real emails or SMS</li>
+                <li>Does NOT share data with third parties</li>
+            </ul>
+        </div>
+
+        <div class="modern-card mb-4">
+            <h3 class="fw-bold mb-3">
+                <i class="bi bi-code-slash text-warning me-2"></i>
+                Technical Information
+            </h3>
+            <p><strong>Technologies Used:</strong></p>
+            <ul>
+                <li>ASP.NET Core 8.0 MVC</li>
+                <li>Entity Framework Core</li>
+                <li>SQL Server LocalDB</li>
+                <li>Bootstrap 5</li>
+            </ul>
+        </div>
+
+        <div class="text-center">
+            <a asp-action="Index" class="btn-modern btn-primary-modern">
+                <i class="bi bi-arrow-left me-2"></i>
+                Back to Home
+            </a>
+        </div>
+    </div>
+</div>
