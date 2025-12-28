@@ -8,6 +8,7 @@ using FlightBooking.Infrastructure.Repositories;
 using FlightBooking.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ============================================
@@ -49,6 +50,11 @@ Console.WriteLine("🔧 [Startup] Duke regjistruar business services...");
 builder.Services.AddScoped<IFlightService, FlightService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+// Repositories
+
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IPassengerRepository, PassengerRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
 // NOTIFICATION SERVICE ME OBSERVER PATTERN
 builder.Services.AddScoped<INotificationService>(provider =>

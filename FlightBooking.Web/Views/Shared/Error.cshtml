@@ -19,7 +19,7 @@
 <!-- Error Details -->
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        @if (Model.ShowRequestId)
+        @if (Model?.ShowRequestId == true)
         {
             <div class="modern-card mb-4" style="border-left: 4px solid var(--danger-color);">
                 <div class="d-flex align-items-start">
@@ -53,26 +53,6 @@
                 <li class="mb-0">Contact support if the problem persists</li>
             </ol>
         </div>
-
-        <!-- Development Info (Only in Development) -->
-        @if (System.Diagnostics.Debugger.IsAttached)
-        {
-            <div class="modern-card mb-4" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%); border: 2px dashed var(--warning-color);">
-                <h5 class="fw-bold mb-3">
-                    <i class="bi bi-code-slash text-warning me-2"></i>
-                    Development Mode
-                </h5>
-
-                <div class="alert alert-warning mb-3">
-                    <strong>Note:</strong> You're seeing this because the application is running in Development mode.
-                </div>
-
-                <p class="small text-muted mb-0">
-                    Swapping to <strong>Production</strong> environment will hide detailed error information from end users.
-                    For local debugging, the <strong>ASPNETCORE_ENVIRONMENT</strong> variable is set to <strong>Development</strong>.
-                </p>
-            </div>
-        }
 
         <!-- Actions -->
         <div class="d-grid gap-2">

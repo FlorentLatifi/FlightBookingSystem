@@ -41,6 +41,8 @@ namespace FlightBooking.Web.Controllers
             return View(searchDto);
         }
 
+        
+        
         /// <summary>
         /// POST: /Home/Search
         /// Kërkon fluturime dhe redirecton te rezultatet
@@ -116,7 +118,10 @@ namespace FlightBooking.Web.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View();
+            return View(new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
     }
 }
