@@ -1,4 +1,7 @@
-﻿using System;
+﻿// FlightBooking.Application/Validators/FlightSearchValidator.cs
+// ✅ ZËVENDËSO KËTË FILE
+
+using System;
 using FlightBooking.Application.DTOs;
 
 namespace FlightBooking.Application.Validators
@@ -65,49 +68,6 @@ namespace FlightBooking.Application.Validators
             }
 
             return result;
-        }
-    }
-
-    /// <summary>
-    /// Klasa për rezultatin e validimit
-    /// </summary>
-    public class ValidationResult
-    {
-        private readonly Dictionary<string, List<string>> _errors = new();
-
-        public bool IsValid => _errors.Count == 0;
-
-        public Dictionary<string, List<string>> Errors => _errors;
-
-        public void AddError(string propertyName, string errorMessage)
-        {
-            if (!_errors.ContainsKey(propertyName))
-            {
-                _errors[propertyName] = new List<string>();
-            }
-
-            _errors[propertyName].Add(errorMessage);
-        }
-
-        public List<string> GetErrors(string propertyName)
-        {
-            return _errors.ContainsKey(propertyName) ? _errors[propertyName] : new List<string>();
-        }
-
-        public string GetFirstError(string propertyName)
-        {
-            var errors = GetErrors(propertyName);
-            return errors.Count > 0 ? errors[0] : string.Empty;
-        }
-
-        public List<string> GetAllErrors()
-        {
-            var allErrors = new List<string>();
-            foreach (var errorList in _errors.Values)
-            {
-                allErrors.AddRange(errorList);
-            }
-            return allErrors;
         }
     }
 }
