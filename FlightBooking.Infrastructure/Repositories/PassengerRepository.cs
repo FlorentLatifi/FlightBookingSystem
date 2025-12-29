@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
 using FlightBooking.Application.Interfaces.Repositories;
 using FlightBooking.Domain.Entities;
 using FlightBooking.Infrastructure.Data;
@@ -12,7 +10,8 @@ using Microsoft.EntityFrameworkCore;
 namespace FlightBooking.Infrastructure.Repositories
 {
     /// <summary>
-    /// Implementimi i IPassengerRepository
+    /// Repository implementation for Passenger entity
+    /// FIXED: UpdateAsync method now works correctly
     /// </summary>
     public class PassengerRepository : IPassengerRepository
     {
@@ -20,7 +19,7 @@ namespace FlightBooking.Infrastructure.Repositories
 
         public PassengerRepository(ApplicationDbContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<IEnumerable<Passenger>> GetAllAsync()
@@ -60,9 +59,12 @@ namespace FlightBooking.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// FIXED: Update is NOT async, so no await needed
+        /// </summary>
         public async Task UpdateAsync(Passenger passenger)
         {
-            await _context.Passengers.AddAsync(passenger);
+            _context.Passengers.Update(passenger);  // ✅ NO AWAIT HERE!
             await _context.SaveChangesAsync();
         }
 

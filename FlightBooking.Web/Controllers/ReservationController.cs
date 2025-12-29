@@ -6,12 +6,11 @@ using FlightBooking.Application.Interfaces.Services;
 using FlightBooking.Domain.Entities;
 using FlightBooking.Domain.Enums;
 
-
 namespace FlightBooking.Web.Controllers
 {
     /// <summary>
-    /// Controller për procesin e rezervimit
-    /// Demonstron flow-in e plotë: Flight → Passenger Info → Payment → Confirmation
+    /// FIXED: All null reference warnings resolved
+    /// Controller for the complete booking flow
     /// </summary>
     public class ReservationController : Controller
     {
@@ -30,22 +29,18 @@ namespace FlightBooking.Web.Controllers
             INotificationService notificationService,
             ILogger<ReservationController> logger)
         {
-            _flightService = flightService;
-            _reservationService = reservationService;
-            _paymentService = paymentService;
-            _passengerRepository = passengerRepository;
-            _notificationService = notificationService;
-            _logger = logger;
+            _flightService = flightService ?? throw new ArgumentNullException(nameof(flightService));
+            _reservationService = reservationService ?? throw new ArgumentNullException(nameof(reservationService));
+            _paymentService = paymentService ?? throw new ArgumentNullException(nameof(paymentService));
+            _passengerRepository = passengerRepository ?? throw new ArgumentNullException(nameof(passengerRepository));
+            _notificationService = notificationService ?? throw new ArgumentNullException(nameof(notificationService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        /// <summary>
-        /// GET: /Reservation/Create/{flightId}
-        /// HAPI 1: Shfaq form për të dhënat e pasagjerit
-        /// </summary>
         [HttpGet]
         public async Task<IActionResult> Create(int flightId)
         {
-            _logger.LogInformation("Duke filluar procesin e rezervimit për fluturimin ID: {FlightId}", flightId);
+            _logger.LogInformation("Starting booking process for flight ID: {FlightId}", flightId);
 
             try
             {
@@ -53,26 +48,25 @@ namespace FlightBooking.Web.Controllers
 
                 if (flight == null)
                 {
-                    _logger.LogWarning("Fluturimi me ID {FlightId} nuk u gjet", flightId);
-                    TempData["ErrorMessage"] = "Fluturimi nuk u gjet.";
+                    _logger.LogWarning("Flight {FlightId} not found", flightId);
+                    TempData["ErrorMessage"] = "Flight not found.";
                     return RedirectToAction("Index", "Home");
                 }
 
                 if (!flight.CanBeBooked())
                 {
-                    _logger.LogWarning("Fluturimi {FlightNumber} nuk mund të rezervohet", flight.FlightNumber);
-                    TempData["ErrorMessage"] = "Ky fluturim nuk mund të rezervohet.";
+                    _logger.LogWarning("Flight {FlightNumber} cannot be booked", flight.FlightNumber);
+                    TempData["ErrorMessage"] = "This flight cannot be booked.";
                     return RedirectToAction("Index", "Home");
                 }
 
-                // Krijo DTO për form
                 var createDto = new CreateReservationDto
                 {
                     FlightId = flightId,
-                    SeatClass = SeatClass.Economy, // Default
+                    SeatClass = SeatClass.Economy,
                     Passenger = new PassengerDto
                     {
-                        DateOfBirth = DateTime.Now.AddYears(-25) // Default: 25 vjeç
+                        DateOfBirth = DateTime.Now.AddYears(-25)
                     },
                     PaymentDetails = new PaymentDetailsDto
                     {
@@ -80,7 +74,6 @@ namespace FlightBooking.Web.Controllers
                     }
                 };
 
-                // Kaloje flight details në ViewBag për ta shfaqur në form
                 ViewBag.Flight = new FlightDto
                 {
                     Id = flight.Id,
@@ -100,22 +93,17 @@ namespace FlightBooking.Web.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Gabim gjatë hapjes së formës së rezervimit");
-                TempData["ErrorMessage"] = "Ndodhi një gabim. Ju lutem provoni përsëri.";
+                _logger.LogError(ex, "Error opening booking form");
+                TempData["ErrorMessage"] = "An error occurred. Please try again.";
                 return RedirectToAction("Index", "Home");
             }
         }
 
-        /// <summary>
-        /// POST: /Reservation/Create
-        /// HAPI 2: Procesohet rezervimi dhe pagesa NË PARALEL
-        /// DEMONSTRON: PARALLEL PROCESSING (si në provim!)
-        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateReservationDto createDto)
         {
-            _logger.LogInformation("Duke procesuar rezervimin për fluturimin ID: {FlightId}", createDto.FlightId);
+            _logger.LogInformation("Processing reservation for flight ID: {FlightId}", createDto.FlightId);
 
             if (!ModelState.IsValid)
             {
@@ -123,8 +111,8 @@ namespace FlightBooking.Web.Controllers
 
                 if (flight == null)
                 {
-                    _logger.LogWarning("Fluturimi nuk u gjet gjatë validimit");
-                    TempData["ErrorMessage"] = "Fluturimi nuk u gjet.";
+                    _logger.LogWarning("Flight not found during validation");
+                    TempData["ErrorMessage"] = "Flight not found.";
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -146,23 +134,20 @@ namespace FlightBooking.Web.Controllers
                 return View(createDto);
             }
 
-
             try
             {
-                // =============================================
-                // HAPI 1: KRIJO/MERR PASAGJERIN
-                // =============================================
+                // Create or get passenger
                 Passenger passenger;
                 var existingPassenger = await _passengerRepository.GetByEmailAsync(createDto.Passenger.Email);
 
                 if (existingPassenger != null)
                 {
-                    _logger.LogInformation("Pasagjeri ekziston: {Email}", createDto.Passenger.Email);
+                    _logger.LogInformation("Existing passenger: {Email}", createDto.Passenger.Email);
                     passenger = existingPassenger;
                 }
                 else
                 {
-                    _logger.LogInformation("Duke krijuar pasagjer të ri: {Email}", createDto.Passenger.Email);
+                    _logger.LogInformation("Creating new passenger: {Email}", createDto.Passenger.Email);
                     passenger = new Passenger
                     {
                         FirstName = createDto.Passenger.FirstName,
@@ -175,34 +160,27 @@ namespace FlightBooking.Web.Controllers
                     };
 
                     await _passengerRepository.AddAsync(passenger);
+
                     if (passenger.Id == 0)
                     {
-                        throw new InvalidOperationException(
-                            "Passenger ID was not generated after saving to database");
+                        throw new InvalidOperationException("Passenger ID not generated after save");
                     }
 
-                    _logger.LogInformation("Pasagjeri u krijua me ID: {PassengerId}", passenger.Id);
+                    _logger.LogInformation("Passenger created with ID: {PassengerId}", passenger.Id);
                 }
 
-                // =============================================
-                // HAPI 2: KRIJO REZERVIMIN
-                // =============================================
+                // Create reservation
                 var reservation = await _reservationService.CreateReservationAsync(
                     createDto.FlightId,
                     passenger.Id,
                     createDto.SeatClass);
 
-                _logger.LogInformation("Rezervimi u krijua: {Code}", reservation.ReservationCode);
+                _logger.LogInformation("Reservation created: {Code}", reservation.ReservationCode);
 
-                // =============================================
-                // HAPI 3: PROCESIMI PARALLEL - REAL IMPLEMENTATION
-                // 🔥 DESIGN PATTERN: Parallel Processing (si në provim!)
-                // Pagesa dhe Përgatitja e Njoftimeve ndodhin NË TË NJËJTËN KOHË
-                // =============================================
-                _logger.LogInformation("\n🔥🔥🔥 [PARALLEL PROCESSING] Duke filluar procesimin paralel... 🔥🔥🔥\n");
-                Console.WriteLine("\n🔥🔥🔥 [PARALLEL PROCESSING] Duke filluar procesimin paralel... 🔥🔥🔥\n");
+                // PARALLEL PROCESSING (as in exam!)
+                _logger.LogInformation("🔥 [PARALLEL PROCESSING] Starting parallel processing...");
+                Console.WriteLine("\n🔥 [PARALLEL PROCESSING] Starting parallel processing...\n");
 
-                // Task 1: Proceso pagesën (kryen komunikim me payment gateway)
                 var paymentTask = _paymentService.ProcessPaymentAsync(
                     reservation.Id,
                     reservation.TotalPrice,
@@ -212,73 +190,48 @@ namespace FlightBooking.Web.Controllers
                     createDto.PaymentDetails.CVV,
                     createDto.PaymentDetails.ExpiryDate);
 
-                // Task 2: Përgatit njoftimet (gather data, prepare templates, etj.)
-                // Kjo mund të ekzekutohet PARALEL me pagesën sepse nuk varet nga rezultati
                 var notificationPrepTask = _notificationService.PrepareNotificationsAsync(reservation);
 
-                // Prit që TË DY task-et të përfundojnë PARALEL
-                // DESIGN PATTERN: Parallel Processing - Task.WhenAll ekzekuton të dyja në të njëjtën kohë
                 await Task.WhenAll(paymentTask, notificationPrepTask);
 
-                _logger.LogInformation("✅ [PARALLEL PROCESSING] Të dyja task-et përfunduan!");
-                Console.WriteLine("\n🎉 [PARALLEL PROCESSING] Të dyja task-et përfunduan! 🎉\n");
+                _logger.LogInformation("✅ [PARALLEL PROCESSING] Both tasks completed!");
+                Console.WriteLine("\n🎉 [PARALLEL PROCESSING] Both tasks completed!\n");
 
                 var payment = await paymentTask;
 
-                // =============================================
-                // HAPI 4: KONTROLLO STATUSIN E PAGESËS
-                // =============================================
                 if (payment.IsSuccessful)
                 {
-                    _logger.LogInformation("✅ Pagesa u krye me sukses: {TransactionId}", payment.TransactionId);
+                    _logger.LogInformation("✅ Payment successful: {TransactionId}", payment.TransactionId);
 
-                    // Konfirmo rezervimin
                     await _reservationService.ConfirmReservationAsync(reservation.Id);
 
-                    // =============================================
-                    // HAPI 5: DËRGO NJOFTIME (OBSERVER PATTERN)
-                    // DESIGN PATTERN: Observer Pattern
-                    // Email dhe SMS observers ekzekutohen NË PARALEL!
-                    // =============================================
-                    _logger.LogInformation("🔥 [OBSERVER PATTERN] Duke dërguar njoftimet e përgatitura...");
+                    _logger.LogInformation("🔥 [OBSERVER PATTERN] Sending prepared notifications...");
                     await _notificationService.SendPreparedNotificationsAsync();
 
-                    // Redirect te faqja e suksesit
                     return RedirectToAction("Success", new { reservationCode = reservation.ReservationCode });
                 }
                 else
                 {
-                    _logger.LogWarning("Pagesa dështoi: {TransactionId}", payment.TransactionId);
-
-                    // Anulo rezervimin nëse pagesa dështoi
+                    _logger.LogWarning("Payment failed: {TransactionId}", payment.TransactionId);
                     await _reservationService.CancelReservationAsync(reservation.Id);
 
-                    TempData["ErrorMessage"] = $"Pagesa dështoi: {payment.PaymentGatewayResponse}";
+                    TempData["ErrorMessage"] = $"Payment failed: {payment.PaymentGatewayResponse}";
                     return RedirectToAction("Failed");
                 }
             }
             catch (Exception ex)
             {
-                // ✅ LOG I PLOTË (stacktrace + inner exception)
-                _logger.LogError(ex, "❌ GABIM KRITIK gjatë procesimit të rezervimit");
-
-                // Merr error-in e brendshëm nëse ekziston
+                _logger.LogError(ex, "❌ CRITICAL ERROR during reservation processing");
                 var innerMessage = ex.InnerException?.Message ?? ex.Message;
-
-                TempData["ErrorMessage"] = $"Ndodhi një gabim: {innerMessage}";
-
+                TempData["ErrorMessage"] = $"An error occurred: {innerMessage}";
                 return RedirectToAction("Failed");
             }
         }
 
-        /// <summary>
-        /// GET: /Reservation/Success/{reservationCode}
-        /// HAPI 3: Faqja e suksesit
-        /// </summary>
         [HttpGet]
         public async Task<IActionResult> Success(string reservationCode)
         {
-            _logger.LogInformation("Shfaq faqen e suksesit për rezervimin: {Code}", reservationCode);
+            _logger.LogInformation("Showing success page for reservation: {Code}", reservationCode);
 
             try
             {
@@ -286,16 +239,25 @@ namespace FlightBooking.Web.Controllers
 
                 if (reservation == null)
                 {
-                    _logger.LogWarning("Rezervimi me kod {Code} nuk u gjet", reservationCode);
+                    _logger.LogWarning("Reservation {Code} not found", reservationCode);
+                    TempData["ErrorMessage"] = "Reservation not found.";
                     return RedirectToAction("Index", "Home");
                 }
 
-                if (reservation.Flight == null || reservation.Passenger == null)
+                // ✅ NULL CHECKS ADDED
+                if (reservation.Flight == null)
                 {
-                    _logger.LogError("Rezervimi {Code} nuk ka Flight ose Passenger", reservationCode);
+                    _logger.LogError("Reservation {Code} has null Flight", reservationCode);
+                    TempData["ErrorMessage"] = "Flight information is missing.";
                     return RedirectToAction("Index", "Home");
                 }
 
+                if (reservation.Passenger == null)
+                {
+                    _logger.LogError("Reservation {Code} has null Passenger", reservationCode);
+                    TempData["ErrorMessage"] = "Passenger information is missing.";
+                    return RedirectToAction("Index", "Home");
+                }
 
                 var reservationDto = new ReservationDto
                 {
@@ -327,15 +289,12 @@ namespace FlightBooking.Web.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Gabim gjatë shfaqjes së faqes së suksesit");
+                _logger.LogError(ex, "Error showing success page");
+                TempData["ErrorMessage"] = "An error occurred.";
                 return RedirectToAction("Index", "Home");
             }
         }
 
-        /// <summary>
-        /// GET: /Reservation/Failed
-        /// Faqja e dështimit
-        /// </summary>
         [HttpGet]
         public IActionResult Failed()
         {
