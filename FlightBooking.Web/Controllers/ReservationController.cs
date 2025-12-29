@@ -175,6 +175,13 @@ namespace FlightBooking.Web.Controllers
                     };
 
                     await _passengerRepository.AddAsync(passenger);
+                    if (passenger.Id == 0)
+                    {
+                        throw new InvalidOperationException(
+                            "Passenger ID was not generated after saving to database");
+                    }
+
+                    _logger.LogInformation("Pasagjeri u krijua me ID: {PassengerId}", passenger.Id);
                 }
 
                 // =============================================
@@ -252,8 +259,14 @@ namespace FlightBooking.Web.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Gabim gjatë procesimit të rezervimit");
-                TempData["ErrorMessage"] = $"Ndodhi një gabim: {ex.Message}";
+                // ✅ LOG I PLOTË (stacktrace + inner exception)
+                _logger.LogError(ex, "❌ GABIM KRITIK gjatë procesimit të rezervimit");
+
+                // Merr error-in e brendshëm nëse ekziston
+                var innerMessage = ex.InnerException?.Message ?? ex.Message;
+
+                TempData["ErrorMessage"] = $"Ndodhi një gabim: {innerMessage}";
+
                 return RedirectToAction("Failed");
             }
         }

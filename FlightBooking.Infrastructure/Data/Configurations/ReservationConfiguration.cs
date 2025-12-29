@@ -27,6 +27,8 @@ namespace FlightBooking.Infrastructure.Data.Configurations
                   .WithOne(p => p.Reservation)
                   .HasForeignKey<Payment>(p => p.ReservationId)
                   .OnDelete(DeleteBehavior.Cascade);
+
+            
         }
     }
 }

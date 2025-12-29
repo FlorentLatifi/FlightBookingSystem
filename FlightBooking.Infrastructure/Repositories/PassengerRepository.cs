@@ -62,7 +62,7 @@ namespace FlightBooking.Infrastructure.Repositories
 
         public async Task UpdateAsync(Passenger passenger)
         {
-            _context.Passengers.Update(passenger);
+            await _context.Passengers.AddAsync(passenger);
             await _context.SaveChangesAsync();
         }
 
